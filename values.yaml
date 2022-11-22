@@ -1,0 +1,11 @@
+---
+image:
+  repository: ethereum/client-go
+  tag: stable
+
+storage:
+  storageClassName: local-path
+
+geth:
+  # generate this value with: 'openssl rand -hex 32 | tr -d "\n"'
+  jwt: a140ab018accxxxxxxxxxxfadfaf81918c0a64f
