@@ -8,7 +8,10 @@ on:
       - synchronize
     paths-ignore:
       - README.md
-    
+      
+env:
+  K8S_VERSION: 'v1.25.4'
+
 jobs:
 
   chart-test:
@@ -34,7 +37,7 @@ jobs:
       - name: Create kind cluster
         uses: helm/kind-action@v1
         with:
-          kubectl_version: 'v1.25'
+          kubectl_version: ${{ env.K8S_VERSION }}
 
       - name: install chart
         run: ct install --chart-dirs . --charts .
