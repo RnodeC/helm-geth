@@ -8,7 +8,7 @@ on:
       - synchronize
     paths-ignore:
       - README.md
-      
+
 env:
   K8S_VERSION: 'v1.25.4'
 
@@ -40,4 +40,10 @@ jobs:
           kubectl_version: ${{ env.K8S_VERSION }}
 
       - name: install chart
-        run: ct install --chart-dirs . --charts .
+        run: |
+          ct install \
+            --chart-dirs . \
+            --charts . \
+            --helm-extra-set-args "--set=storage.storageClassName=standard" \
+            --helm-extra-args "--create-namespace" \
+            --namespace geth
