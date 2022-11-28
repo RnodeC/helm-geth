@@ -10,5 +10,5 @@ storage:
 # geth:
   # network: mainnet
   # generate this value with: 'openssl rand -hex 32 | tr -d "\n"'
-  # if not jwt provided, geth will accept no beacon chain connections
+  # if not jwt provided, geth will auto-generate a secret under /chaindata/geth/jwtsecret
   # jwt:

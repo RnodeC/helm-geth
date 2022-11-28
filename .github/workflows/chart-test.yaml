@@ -11,6 +11,7 @@ on:
 
 env:
   K8S_VERSION: 'v1.25.4'
+  GETH_VERSION: 'v1.10.26'
 
 jobs:
 
@@ -19,6 +20,20 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+
+      - name: Get latest geth release
+        id: geth-version
+        run: |
+          geth-version=$(curl -s \
+            https://api.github.com/repos/ethereum/go-ethereum/releases/latest \
+            | jq .tag_name -r)
+          echo geth-version=$geth-version >> $GITHUB_OUTPUTS
+
+      - name: Build Github Job Summary
+        run: |
+          echo "# helm chart testing" >> $GITHUB_STEP_SUMMARY
+          echo "k8s version: ${{ env.K8S_VERSION }}" >> $GITHUB_STEP_SUMMARY
+          echo "geth version: ${{ steps.geth-version.outputs.geth-version }}" >> $GITHUB_STEP_SUMMARY
 
       - name: Set up Helm
         uses: azure/setup-helm@v3
@@ -44,4 +59,4 @@ jobs:
           ct install \
             --chart-dirs . \
             --charts . \
-            --helm-extra-set-args "--set=storage.storageClassName=standard"
+            --helm-extra-set-args "--set=storage.storageClassName=standard,--set=image.tag=${{ steps.geth-version.outputs.geth-version }}"
