@@ -45,5 +45,4 @@ jobs:
             --chart-dirs . \
             --charts . \
             --helm-extra-set-args "--set=storage.storageClassName=standard" \
-            --helm-extra-args "--create-namespace" \
             --namespace geth
