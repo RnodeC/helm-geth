@@ -7,8 +7,8 @@ storage:
   storageClassName: local-path
   pvcSize: 50Gi
 
-#geth:
-  #network: mainnet
+# geth:
+  # network: mainnet
   # generate this value with: 'openssl rand -hex 32 | tr -d "\n"'
   # if not jwt provided, geth will accept no beacon chain connections
-  #jwt: 
+  # jwt:
