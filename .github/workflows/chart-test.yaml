@@ -44,5 +44,4 @@ jobs:
           ct install \
             --chart-dirs . \
             --charts . \
-            --helm-extra-set-args "--set=storage.storageClassName=standard" \
-            --namespace geth
+            --helm-extra-set-args "--set=storage.storageClassName=standard"
