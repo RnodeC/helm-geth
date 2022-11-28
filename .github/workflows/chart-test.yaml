@@ -27,7 +27,7 @@ jobs:
           geth-version=$(curl -s \
             https://api.github.com/repos/ethereum/go-ethereum/releases/latest \
             | jq .tag_name -r)
-          echo geth-version=$geth-version >> $GITHUB_OUTPUTS
+          echo "geth-version=$geth-version" >> $GITHUB_OUTPUTS
 
       - name: Build Github Job Summary
         run: |
