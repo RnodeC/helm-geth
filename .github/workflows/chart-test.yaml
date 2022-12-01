@@ -9,10 +9,6 @@ on:
     paths-ignore:
       - README.md
 
-env:
-  K8S_VERSION: 'v1.25.4'
-  GETH_VERSION: 'v1.10.26'
-
 jobs:
 
   chart-test:
@@ -25,15 +21,15 @@ jobs:
         id: geth-version
         run: |
           geth-version=$(curl -s \
-            https://api.github.com/repos/ethereum/go-ethereum/releases/latest \
-            | jq .tag_name -r)
-          echo "geth-version=$geth-version" >> $GITHUB_OUTPUTS
+            https://api.github.com/repos/ethereum/go-ethereum/releases/latest | jq .tag_name -r)
+          echo "geth-version=$geth-version" >> $GITHUB_OUTPUT
 
       - name: Build Github Job Summary
         run: |
           echo "# helm chart testing" >> $GITHUB_STEP_SUMMARY
           echo "k8s version: ${{ env.K8S_VERSION }}" >> $GITHUB_STEP_SUMMARY
           echo "geth version: ${{ steps.geth-version.outputs.geth-version }}" >> $GITHUB_STEP_SUMMARY
+          echo "kind version: ${{ steps.kind-version.outputs.kind-version }}" >> $GITHUB_STEP_SUMMARY
 
       - name: Set up Helm
         uses: azure/setup-helm@v3
@@ -51,8 +47,6 @@ jobs:
 
       - name: Create kind cluster
         uses: helm/kind-action@v1
-        with:
-          kubectl_version: ${{ env.K8S_VERSION }}
 
       - name: install chart
         run: |
