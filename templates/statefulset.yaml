@@ -1,3 +1,4 @@
+{{- $geth := .Values.geth | default dict }}
 ---
 apiVersion: apps/v1
 kind: StatefulSet
@@ -16,10 +17,12 @@ spec:
         app: geth
     spec:
       serviceAccountName: geth
+      {{- if $geth.jwt -}}    
       volumes:
        - name: jwt
          secret:
            secretName: jwt
+      {{- end }}
       containers:
       - name: geth
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -27,7 +30,7 @@ spec:
         command: 
         - geth
         args:
-        - --mainnet
+        - --{{ $geth.network | default ("mainnet") }}
         - --http
         - --http.addr=0.0.0.0
         - --http.port=8545
@@ -35,16 +38,15 @@ spec:
         - --authrpc.port=8551 
         - --ipcdisable
         - --datadir=/chaindata
-        - --authrpc.jwtsecret=/etc/eth2/token.jwt
+        {{- if $geth.jwt -}}    
+        - --authrpc.jwtsecret=/etc/eth2/jwt.token
+        {{- end }}
         ports:
           - name: rpc
             containerPort: 8551
             protocol: TCP
           - name: http
             containerPort: 8545
-            protocol: TCP
-          - name: ipc
-            containerPort: 30303
             protocol: TCP
         livenessProbe:
           httpGet:
@@ -57,8 +59,10 @@ spec:
         volumeMounts:
         - name: chaindata
           mountPath: /chaindata
+        {{- if $geth.jwt -}}    
         - name: jwt
           mountPath: /etc/eth2
+        {{- end }}
   volumeClaimTemplates:
   - apiVersion: v1
     metadata:
@@ -70,5 +74,5 @@ spec:
       accessModes: ["ReadWriteOnce"]
       resources:
         requests:
-          storage: "500Gi"
+          storage: "{{ .Values.storage.pvcSize }}"
 

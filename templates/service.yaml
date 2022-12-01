@@ -9,6 +9,10 @@ spec:
   type: ClusterIP
   ports:
     - port: 8545
+      targetPort: http
+      protocol: TCP
+      name: http
+    - port: 8551
       targetPort: rpc
       protocol: TCP
       name: rpc

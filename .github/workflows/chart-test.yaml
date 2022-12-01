@@ -8,7 +8,7 @@ on:
       - synchronize
     paths-ignore:
       - README.md
-    
+
 jobs:
 
   chart-test:
@@ -16,6 +16,17 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+
+      - name: Get latest geth release
+        id: geth-version
+        run: |
+          gv=$(curl -s https://api.github.com/repos/ethereum/go-ethereum/releases/latest | jq .tag_name -r)
+          echo "geth-version=$gv" >> $GITHUB_OUTPUT
+
+      - name: Build Github Job Summary
+        run: |
+          echo "# helm chart testing" >> $GITHUB_STEP_SUMMARY
+          echo "geth version: ${{ steps.geth-version.outputs.geth-version }}" >> $GITHUB_STEP_SUMMARY
 
       - name: Set up Helm
         uses: azure/setup-helm@v3
@@ -29,12 +40,14 @@ jobs:
         uses: helm/chart-testing-action@v2
 
       - name: Lint chart
-        run: ct lint
+        run: ct lint  --chart-dirs . --charts .
 
       - name: Create kind cluster
         uses: helm/kind-action@v1
-        with:
-          kubectl_version: 'v1.25'
 
       - name: install chart
-        run: ct install
+        run: |
+          ct install \
+            --chart-dirs . \
+            --charts . \
+            --helm-extra-set-args "--set=storage.storageClassName=standard,--set=image.tag=${{ steps.geth-version.outputs.geth-version }}"
