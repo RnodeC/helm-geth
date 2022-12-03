@@ -1,8 +1,5 @@
-# helm-geth
-
-Deploy a geth exceution client into a kubernetes cluster.
+# RnodeC helm charts
 
 ```bash
-helm upgrade --install geth -n geth --create-namespace \
-  --set geth.jwt=<jwt token>
+helm repo add https://rnodec.github.io/helm-charts
 ```
