@@ -1,10 +1,10 @@
 ---
 image:
   repository: ethereum/client-go
-  tag: stable
+  tag: latest
 
 storage:
-  storageClassName: local-path
+  storageClassName: standard
   pvcSize: 50Gi
 
 # geth:
