@@ -1,0 +1,17 @@
+apiVersion: v1
+entries:
+  geth:
+  - apiVersion: v2
+    appVersion: 1.10.26
+    created: "2022-12-03T14:08:12.014255036Z"
+    description: A Helm chart for running geth (ethereum execution engine)
+    digest: 3cb45d87938e8c6d725dfa275ce066bdc7988246715c13d00614d171fb4fd4f8
+    maintainers:
+    - email: rnodec@pm.me
+      name: rnodec
+    name: geth
+    type: application
+    urls:
+    - https://github.com/RnodeC/helm-charts/releases/download/geth-0.3.0/geth-0.3.0.tgz
+    version: 0.3.0
+generated: "2022-12-03T14:08:12.014260536Z"
