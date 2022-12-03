@@ -40,10 +40,13 @@ jobs:
         uses: helm/chart-testing-action@v2
 
       - name: Lint chart
-        run: ct lint --config .github/ct.yaml
+        run: |
+          ls -la 
+          ls -la charts/
+          ct lint --config .github/ct.yaml --all
 
       - name: Create kind cluster
         uses: helm/kind-action@v1
 
       - name: install chart
-        run: ct install --config .github/ct.yaml
+        run: ct install --config .github/ct.yaml --all
