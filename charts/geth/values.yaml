@@ -5,7 +5,7 @@ image:
 
 storage:
   storageClassName: standard
-  pvcSize: 50Gi
+  pvcSize: 40Gi
 
 # geth:
   # network: mainnet
