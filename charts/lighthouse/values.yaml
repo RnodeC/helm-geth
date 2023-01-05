@@ -24,7 +24,7 @@ lighthouse:
     execution_endpoint:
       host: geth.geth
       port: 8551
-      # jwt: 
+      # jwt:
   # validator:
   #  fee_recipient
   #  graffiti:
