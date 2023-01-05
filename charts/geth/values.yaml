@@ -1,14 +1,23 @@
 ---
 image:
   repository: ethereum/client-go
-  tag: latest
+  tag: v1.10.26
 
 storage:
   storageClassName: standard
   pvcSize: 40Gi
 
-# geth:
-  # network: mainnet
+rbac:
+  create: true
+
+serviceAccount:
+  create: true
+  name: geth 
+
+geth:
+  network: mainnet
   # generate this value with: 'openssl rand -hex 32 | tr -d "\n"'
   # if not jwt provided, geth will auto-generate a secret under /chaindata/geth/jwtsecret
-  # jwt:
+  # if you do provide the jwt, do not include the leading "0x"
+  #jwt: 9bfbb14a86ddda93871dcb179e77eed70ac4b96fbdbb7ac0255b6b33a30526a0
+

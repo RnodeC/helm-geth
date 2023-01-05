@@ -4,7 +4,7 @@ kind: Service
 metadata:
   name: geth
   labels:
-    app: geth
+{{ include "geth.labels" . | indent 4 }}
 spec:
   type: ClusterIP
   ports:
@@ -17,4 +17,5 @@ spec:
       protocol: TCP
       name: rpc
   selector:
-    app: geth
+{{ include "geth.labels" . | indent 4 }}
+

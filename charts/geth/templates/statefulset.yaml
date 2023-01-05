@@ -1,37 +1,30 @@
-{{- $geth := .Values.geth | default dict }}
 ---
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: geth
   labels:
-    app: geth
+{{ include "geth.labels" . | indent 4 }}
 spec:
   replicas: 2
   serviceName: geth
   selector:
     matchLabels:
-      app: geth
+{{ include "geth.labels" . | indent 6 }}
   template:
     metadata:
       labels:
-        app: geth
+{{ include "geth.labels" . | indent 8 }}
     spec:
-      serviceAccountName: geth
-      {{- if $geth.jwt -}}    
-      volumes:
-       - name: jwt
-         secret:
-           secretName: jwt
-      {{- end }}
+      serviceAccountName: {{ include "geth.serviceAccountName" . }}
       containers:
       - name: geth
-        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-        imagePullPolicy: IfNotPresent
+        image: {{ include "geth.image" . }}
         command: 
         - geth
         args:
-        - --{{ $geth.network | default ("mainnet") }}
+        {{- with .Values.geth }}
+        - --{{ .network }}
         - --http
         - --http.addr=0.0.0.0
         - --http.port=8545
@@ -39,9 +32,11 @@ spec:
         - --authrpc.port=8551 
         - --ipcdisable
         - --datadir=/chaindata
-        {{- if $geth.jwt -}}    
+        {{- if .jwt }}
         - --authrpc.jwtsecret=/etc/eth2/jwt.token
         {{- end }}
+        {{- end }}
+        imagePullPolicy: IfNotPresent
         ports:
           - name: rpc
             containerPort: 8551
@@ -57,23 +52,40 @@ spec:
           httpGet:
             path: / 
             port: http
+        securityContext:
+          privileged: false
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:  
+              - ALL
         volumeMounts:
         - name: chaindata
           mountPath: /chaindata
-        {{- if $geth.jwt -}}    
+        {{- if .Values.geth.jwt }}
         - name: jwt
           mountPath: /etc/eth2
         {{- end }}
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 1000
+      {{- if .Values.geth.jwt }}
+      volumes:
+       - name: jwt
+         secret:
+           secretName: geth-jwt
+      {{- end }}
   volumeClaimTemplates:
   - apiVersion: v1
     metadata:
       name: chaindata
       labels:
-        app: geth
+{{ include "geth.labels" . | indent 8 }}
     spec:
-      storageClassName: "{{ .Values.storage.storageClassName }}"
+      storageClassName: {{ .Values.storage.storageClassName }}
       accessModes: ["ReadWriteOnce"]
       resources:
         requests:
-          storage: "{{ .Values.storage.pvcSize }}"
-
+          storage: {{ .Values.storage.pvcSize }}
