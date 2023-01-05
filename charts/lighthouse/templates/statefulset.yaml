@@ -1,0 +1,109 @@
+{{- $lhrole := "beacon" -}}
+{{- if .Values.lighthouse.role -}}
+{{- $lhrole = .Values.lighthouse.role -}}
+{{- end -}}
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: lighthouse
+  labels:
+{{ include "lighthouse.labels" . | indent 4 }}
+spec:
+  replicas: 2
+  serviceName: lighthouse
+  selector:
+    matchLabels:
+{{ include "lighthouse.labels" . | indent 6 }}
+  template:
+    metadata:
+      labels:
+{{ include "lighthouse.labels" . | indent 8 }}
+    spec:
+      serviceAccount: {{ include "lighthouse.serviceAccountName" . }}
+      serviceAccountName: {{ include "lighthouse.serviceAccountName" . }}     
+      {{- if eq $lhrole "beacon" }}
+      volumes:
+       - name: jwt
+         secret:
+           secretName: lh-jwt
+      {{- end }}
+      containers:
+      - name: lighthouse
+        image: {{ include "lighthouse.image" . }}
+        imagePullPolicy: IfNotPresent
+        command: 
+        - lighthouse 
+        - {{ $lhrole }}
+        args:
+        {{ with .Values.lighthouse -}}
+        - --network={{ .network }}
+        - --datadir=/chaindata
+        {{- if eq $lhrole "beacon" }}
+        - --http
+        - --prune-payloads=false
+        {{ with required "lighthouse.beacon is required in beacon mode" .beacon -}}
+        - --execution-endpoint=http://{{ required "lighthouse.beacon.execution_endpoint.host is required in beacon mode" .execution_endpoint.host }}:{{ required "lighthouse.beacon.execution_endpoint.port is required in beacon mode" .execution_endpoint.port }}
+        {{ end -}}
+        - --execution-jwt=/etc/eth2/jwt.token
+        {{- end }}
+        {{- if eq $lhrole "vc" }}
+        {{ with .validator -}}
+        {{- if .graffiti }}
+        - --graffiti={{ .graffiti | quote }}
+        {{- end }}
+        {{- if .fee_recipient }}
+        - --suggested-fee-recipient={{ .fee_recipient | quote }}
+        {{- end }}
+        {{- end }}
+        {{- end }}
+        {{- end }}
+        ports:
+          - name: http
+            containerPort: 5052
+            protocol: TCP
+          - name: tcppeer
+            containerPort: 9000
+            protocol: TCP
+          - name: udppeer
+            containerPort: 9000
+            protocol: UDP
+        livenessProbe:
+          httpGet:
+            path: /
+            port: http
+        readinessProbe:
+          httpGet:
+            path: / 
+            port: http
+        securityContext:
+          seccompProfile:
+            type: RuntimeDefault
+          privileged: false
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:  
+              - ALL
+        volumeMounts:
+        - name: chaindata
+          mountPath: /chaindata
+        {{- if eq $lhrole "beacon" }}
+        - name: jwt
+          mountPath: /etc/eth2
+        {{- end }}
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 1000
+  volumeClaimTemplates:
+  - apiVersion: v1
+    metadata:
+      name: chaindata
+      labels:
+{{ include "lighthouse.labels" . | indent 8 }}
+    spec:
+      storageClassName: {{ .Values.storage.storageClassName }}
+      accessModes: ["ReadWriteOnce"]
+      resources:
+        requests:
+          storage: {{ .Values.storage.pvcSize }}

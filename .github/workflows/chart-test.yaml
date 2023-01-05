@@ -28,17 +28,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Get latest geth release
-        id: geth-version
-        run: |
-          gv=$(curl -s https://api.github.com/repos/ethereum/go-ethereum/releases/latest | jq .tag_name -r)
-          echo "geth-version=$gv" >> $GITHUB_OUTPUT
-
-      - name: Build Github Job Summary
-        run: |
-          echo "# helm chart testing" >> $GITHUB_STEP_SUMMARY
-          echo "geth version: ${{ steps.geth-version.outputs.geth-version }}" >> $GITHUB_STEP_SUMMARY
-
       - name: Set up Helm
         uses: azure/setup-helm@v3
 

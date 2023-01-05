@@ -1,0 +1,30 @@
+---
+image:
+  repository: sigp/lighthouse
+  tag: v3.3.0
+
+storage:
+  storageClassName: standard
+  pvcSize: 40Gi
+
+rbac:
+  create: true
+
+serviceAccount:
+  create: true
+  name: lighthouse 
+
+lighthouse: 
+  network: mainnet
+  role: beacon
+
+  beacon:
+    # all of these values are required if in beacon mode
+    # 
+    execution_endpoint:
+      host: geth.geth
+      port: 8551
+      jwt: d4df6540860e218ddb5725f51de578f830a28237b52fba3d14be9102e9444551
+  #validator:
+  # fee_recipient
+  # graffiti:

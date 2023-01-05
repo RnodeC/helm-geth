@@ -1,0 +1,25 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: lighthouse
+  labels:
+{{ include "lighthouse.labels" . | indent 4 }}
+spec:
+  type: ClusterIP
+  ports:
+    - port: 5052
+      targetPort: http
+      protocol: TCP
+      name: http
+    - port: 9000
+      targetPort: tcppeer
+      protocol: TCP
+      name: tcppeer
+    - port: 9000
+      targetPort: udppeer
+      protocol: UDP
+      name: udppeer
+  selector:
+{{ include "lighthouse.labels" . | indent 4 }}
+
