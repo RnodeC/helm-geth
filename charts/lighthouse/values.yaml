@@ -1,7 +1,7 @@
 ---
 image:
   repository: sigp/lighthouse
-  tag: v3.3.0
+  tag: v3.3.0-modern
 
 storage:
   storageClassName: standard
@@ -18,12 +18,13 @@ lighthouse:
   network: mainnet
   role: beacon
 
-  beacon:
-    # all of these values are required if in beacon mode
+  # beacon:
+    # all of these values are required if in beacon mode.  a consensus client requires an execution layer.
+    # however, if they are not provided, lighthouse pod should still deploy and run for long enough to satisfy liveness and readiness probes
     # jwt must not include a leading '0x'
-    execution_endpoint:
-      host: geth.geth
-      port: 8551
+    # execution_endpoint:
+      # host: 
+      # port: 
       # jwt:
   # validator:
   #  fee_recipient

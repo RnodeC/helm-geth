@@ -42,10 +42,12 @@ spec:
         {{- if eq $lhrole "beacon" }}
         - --http
         - --prune-payloads=false
-        {{ with required "lighthouse.beacon is required in beacon mode" .beacon -}}
-        - --execution-endpoint=http://{{ required "lighthouse.beacon.execution_endpoint.host is required in beacon mode" .execution_endpoint.host }}:{{ required "lighthouse.beacon.execution_endpoint.port is required in beacon mode" .execution_endpoint.port }}
-        {{ end -}}
-        - --execution-jwt=/etc/eth2/jwt.token
+        - --disable-upnp
+        {{- $beacon := default dict .beacon -}}
+        {{- if $beacon.execution_endpoint }}
+        - --execution-endpoint=http://{{- $beacon.execution_endpoint.host -}}:{{- $beacon.execution_endpoint.port }}
+        - --execution-jwt=/etc/eth2/jwt
+        {{- end }}
         {{- end }}
         {{- if eq $lhrole "vc" }}
         {{ with .validator -}}
@@ -69,13 +71,28 @@ spec:
             containerPort: 9000
             protocol: UDP
         livenessProbe:
-          httpGet:
-            path: /
-            port: http
+          periodSeconds: 10
+          initialDelaySeconds: 10
+          successThreshold: 1
+          exec:
+            command: 
+            - cat
+            - /chaindata/beacon/network/enr.dat
         readinessProbe:
-          httpGet:
-            path: / 
-            port: http
+          periodSeconds: 10
+          initialDelaySeconds: 10
+          successThreshold: 1
+          exec:
+            command: 
+            - cat 
+            - /chaindata/beacon/network/enr.dat
+        resources:
+          limits:
+            cpu: 2
+            memory: 4Gi
+          requests:
+            cpu: 1
+            memory: 1Gi  
         securityContext:
           seccompProfile:
             type: RuntimeDefault
