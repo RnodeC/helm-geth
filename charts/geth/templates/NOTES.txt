@@ -9,4 +9,4 @@ To learn more about the release, try:
 
 The jwt that geth is using to authenticate beacon node connections can be found in the secret named geth-jwt.  You will need to extract this jwt value and provide it to any beacon node that will use this Execution Engine.  Here is an example command to do so:
 
-  $ kubectl get secrets -n geth geth-jwt -ojsonpath='{.data.jwt\.token}' | base64 -d
+  $ kubectl get secrets -n geth geth-jwt -ojsonpath='{.data.jwt}' | base64 -d

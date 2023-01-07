@@ -31,5 +31,5 @@ Returns a random 32 byte hex string to be used as the common geth jwt token, if 
 {{- else -}}
 {{- $jwt = randAlphaNum 32 | sha256sum -}}
 {{- end -}}
-{{ printf "0x%s" $jwt | b64enc | quote }}
+{{ $jwt | b64enc | quote }}
 {{- end -}}

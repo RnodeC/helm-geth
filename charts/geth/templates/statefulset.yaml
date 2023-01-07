@@ -25,16 +25,18 @@ spec:
         args:
         {{- with .Values.geth }}
         - --{{ .network }}
+        - --datadir=/chaindata
         - --http
         - --http.addr=0.0.0.0
         - --http.port=8545
+        - --http.vhosts=*
         - --authrpc.addr=0.0.0.0
         - --authrpc.port=8551 
+        - --authrpc.vhosts=*
+        - --authrpc.jwtsecret=/etc/eth2/jwt
+        {{- if .ipcDisable }}
         - --ipcdisable
-        - --datadir=/chaindata
-        {{- if .jwt }}
-        - --authrpc.jwtsecret=/etc/eth2/jwt.token
-        {{- end }}
+        {{- end -}}
         {{- end }}
         imagePullPolicy: IfNotPresent
         ports:
@@ -45,13 +47,24 @@ spec:
             containerPort: 8545
             protocol: TCP
         livenessProbe:
+          initialDelaySeconds: 60
+          periodSeconds: 120
           httpGet:
             path: /
             port: http
         readinessProbe:
+          initialDelaySeconds: 10
+          periodSeconds: 10
           httpGet:
             path: / 
             port: http
+        resources:
+          limits:
+            cpu: 2
+            memory: 4Gi
+          requests:
+            cpu: 1
+            memory: 1Gi       
         securityContext:
           privileged: false
           allowPrivilegeEscalation: false
@@ -61,22 +74,18 @@ spec:
         volumeMounts:
         - name: chaindata
           mountPath: /chaindata
-        {{- if .Values.geth.jwt }}
         - name: jwt
           mountPath: /etc/eth2
-        {{- end }}
       securityContext:
         seccompProfile:
           type: RuntimeDefault
         runAsNonRoot: true
         runAsUser: 1000
         fsGroup: 1000
-      {{- if .Values.geth.jwt }}
       volumes:
        - name: jwt
          secret:
            secretName: geth-jwt
-      {{- end }}
   volumeClaimTemplates:
   - apiVersion: v1
     metadata:
