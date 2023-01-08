@@ -23,8 +23,8 @@ lighthouse:
     # however, if they are not provided, lighthouse pod should still deploy and run for long enough to satisfy liveness and readiness probes
     # jwt must not include a leading '0x'
     # execution_endpoint:
-      # host: 
-      # port: 
+      # host:
+      # port:
       # jwt:
   # validator:
   #  fee_recipient
