@@ -49,14 +49,17 @@ spec:
         livenessProbe:
           initialDelaySeconds: 60
           periodSeconds: 120
-          httpGet:
-            path: /
+          terminationGracePeriodSeconds: 60
+          tcpSocket:
             port: http
         readinessProbe:
           initialDelaySeconds: 10
           periodSeconds: 10
-          httpGet:
-            path: / 
+          tcpSocket:
+            port: http
+        startupProbe:
+          initialDelaySeconds: 120
+          tcpSocket:
             port: http
         resources:
           limits:
