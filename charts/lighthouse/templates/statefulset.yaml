@@ -48,6 +48,9 @@ spec:
         - --execution-endpoint=http://{{- $beacon.execution_endpoint.host -}}:{{- $beacon.execution_endpoint.port }}
         - --execution-jwt=/etc/eth2/jwt
         {{- end }}
+        {{- if $beacon.checkpoint_sync.enabled }}
+        - --checkpoint-sync-url={{- required "lighthouse.beacon.checkpoint_sync.url is required when checkpoint_sync is enabled" $beacon.checkpoint_sync.url -}}
+        {{- end }}
         {{- end }}
         {{- if eq $lhrole "vc" }}
         {{ with .validator -}}
