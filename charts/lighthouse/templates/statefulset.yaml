@@ -10,7 +10,7 @@ metadata:
   labels:
 {{ include "lighthouse.labels" . | indent 4 }}
 spec:
-  replicas: 2
+  replicas: {{ .Values.replicas }}
   serviceName: lighthouse
   selector:
     matchLabels:

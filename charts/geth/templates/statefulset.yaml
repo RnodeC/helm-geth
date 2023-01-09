@@ -6,7 +6,7 @@ metadata:
   labels:
 {{ include "geth.labels" . | indent 4 }}
 spec:
-  replicas: 2
+  replicas: {{ .Values.replicas }}
   serviceName: geth
   selector:
     matchLabels:
