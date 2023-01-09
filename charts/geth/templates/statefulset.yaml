@@ -1,47 +1,44 @@
-{{- $geth := .Values.geth | default dict }}
 ---
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: geth
   labels:
-    app: geth
+{{ include "geth.labels" . | indent 4 }}
 spec:
-  replicas: 2
+  replicas: {{ .Values.replicas }}
   serviceName: geth
   selector:
     matchLabels:
-      app: geth
+{{ include "geth.labels" . | indent 6 }}
   template:
     metadata:
       labels:
-        app: geth
+{{ include "geth.labels" . | indent 8 }}
     spec:
-      serviceAccountName: geth
-      {{- if $geth.jwt -}}    
-      volumes:
-       - name: jwt
-         secret:
-           secretName: jwt
-      {{- end }}
+      serviceAccountName: {{ include "geth.serviceAccountName" . }}
       containers:
       - name: geth
-        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-        imagePullPolicy: IfNotPresent
+        image: {{ include "geth.image" . }}
         command: 
         - geth
         args:
-        - --{{ $geth.network | default ("mainnet") }}
+        {{- with .Values.geth }}
+        - --{{ .network }}
+        - --datadir=/chaindata
         - --http
         - --http.addr=0.0.0.0
         - --http.port=8545
+        - --http.vhosts=*
         - --authrpc.addr=0.0.0.0
         - --authrpc.port=8551 
+        - --authrpc.vhosts=*
+        - --authrpc.jwtsecret=/etc/eth2/jwt
+        {{- if .ipcDisable }}
         - --ipcdisable
-        - --datadir=/chaindata
-        {{- if $geth.jwt -}}    
-        - --authrpc.jwtsecret=/etc/eth2/jwt.token
+        {{- end -}}
         {{- end }}
+        imagePullPolicy: IfNotPresent
         ports:
           - name: rpc
             containerPort: 8551
@@ -50,30 +47,57 @@ spec:
             containerPort: 8545
             protocol: TCP
         livenessProbe:
-          httpGet:
-            path: /
+          initialDelaySeconds: 60
+          periodSeconds: 120
+          terminationGracePeriodSeconds: 60
+          tcpSocket:
             port: http
         readinessProbe:
-          httpGet:
-            path: / 
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          tcpSocket:
             port: http
+        startupProbe:
+          initialDelaySeconds: 120
+          tcpSocket:
+            port: http
+        resources:
+          limits:
+            cpu: 2
+            memory: 4Gi
+          requests:
+            cpu: 1
+            memory: 1Gi       
+        securityContext:
+          privileged: false
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:  
+              - ALL
         volumeMounts:
         - name: chaindata
           mountPath: /chaindata
-        {{- if $geth.jwt -}}    
         - name: jwt
           mountPath: /etc/eth2
-        {{- end }}
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 1000
+      volumes:
+       - name: jwt
+         secret:
+           secretName: geth-jwt
   volumeClaimTemplates:
   - apiVersion: v1
     metadata:
       name: chaindata
       labels:
-        app: geth
+{{ include "geth.labels" . | indent 8 }}
     spec:
-      storageClassName: "{{ .Values.storage.storageClassName }}"
+      storageClassName: {{ .Values.storage.storageClassName }}
       accessModes: ["ReadWriteOnce"]
       resources:
         requests:
-          storage: "{{ .Values.storage.pvcSize }}"
-
+          storage: {{ .Values.storage.pvcSize }}

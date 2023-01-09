@@ -1,0 +1,39 @@
+---
+image:
+  repository: sigp/lighthouse
+  tag: v3.3.0
+
+storage:
+  storageClassName: standard
+  pvcSize: 40Gi
+
+rbac:
+  create: true
+
+replicas: 1
+
+serviceAccount:
+  create: true
+  name: lighthouse
+
+lighthouse:
+  network: mainnet
+  role: beacon
+
+  beacon:
+
+    # use a checkpoint sync provider to speed up syncs from scratch
+    checkpoint_sync:
+      enabled: true
+      url: https://mainnet.checkpoint.sigp.io
+
+    # all of these values are required if in beacon mode.  a consensus client requires an execution layer.
+    # however, if they are not provided, lighthouse pod should still deploy and run for long enough to satisfy liveness and readiness probes
+    # jwt must not include a leading '0x'
+    # execution_endpoint:
+      # host:
+      # port:
+      # jwt:
+  # validator:
+  #  fee_recipient
+  #  graffiti:
