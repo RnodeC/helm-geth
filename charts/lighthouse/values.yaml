@@ -10,7 +10,7 @@ storage:
 rbac:
   create: true
 
-replicas: 1 
+replicas: 1
 
 serviceAccount:
   create: true
