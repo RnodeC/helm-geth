@@ -1,7 +1,7 @@
 ---
 image:
   repository: sigp/lighthouse
-  tag: v3.3.0
+  tag: v3.4.0
 
 storage:
   storageClassName: standard
@@ -12,6 +12,7 @@ rbac:
 
 replicas: 1
 
+
 serviceAccount:
   create: true
   name: lighthouse
@@ -20,6 +21,9 @@ lighthouse:
   network: mainnet
   role: beacon
 
+  metrics:
+    enabled: true
+  
   beacon:
 
     # use a checkpoint sync provider to speed up syncs from scratch

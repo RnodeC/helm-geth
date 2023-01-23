@@ -39,7 +39,13 @@ spec:
         {{ with .Values.lighthouse -}}
         - --network={{ .network }}
         - --datadir=/chaindata
+        {{ if .metrics.enabled }}
+        - --metrics
+        - --metrics-address=0.0.0.0
+        - --metrics-allow-origin=*
+        {{- end }}
         {{- if eq $lhrole "beacon" }}
+        - --metrics-port=5054
         - --http
         - --prune-payloads=false
         - --disable-upnp
@@ -53,6 +59,7 @@ spec:
         {{- end }}
         {{- end }}
         {{- if eq $lhrole "vc" }}
+        - --metrics-port=5064
         {{ with .validator -}}
         {{- if .graffiti }}
         - --graffiti={{ .graffiti | quote }}
@@ -66,6 +73,13 @@ spec:
         ports:
           - name: http
             containerPort: 5052
+            protocol: TCP
+          - name: metrics
+            {{- if eq $lhrole "beacon" }}
+            containerPort: 5054
+            {{- else if eq $lhrole "vc" -}}
+            containerPort: 5064              
+            {{- end }}
             protocol: TCP
           - name: tcppeer
             containerPort: 9000
