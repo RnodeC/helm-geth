@@ -20,13 +20,13 @@ resources:
     memory: 4Gi
   requests:
     cpu: 1
-    memory: 2Gi     
+    memory: 2Gi
   # limits:
   #   cpu: 4
   #   memory: 16Gi
   # requests:
   #   cpu: 2
-  #   memory: 8Gi    
+  #   memory: 8Gi
 
 serviceAccount:
   create: true
