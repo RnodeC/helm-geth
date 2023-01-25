@@ -1,7 +1,7 @@
 ---
 image:
   repository: sigp/lighthouse
-  tag: v3.3.0
+  tag: v3.4.0
 
 storage:
   storageClassName: standard
@@ -12,6 +12,22 @@ rbac:
 
 replicas: 1
 
+resources:
+  # These default resources are for testing purposes
+  # If you actually want to run a node, use the more realistic values which are commented out.
+  limits:
+    cpu: 2
+    memory: 4Gi
+  requests:
+    cpu: 1
+    memory: 2Gi
+  # limits:
+  #   cpu: 4
+  #   memory: 16Gi
+  # requests:
+  #   cpu: 2
+  #   memory: 8Gi
+
 serviceAccount:
   create: true
   name: lighthouse
@@ -19,6 +35,9 @@ serviceAccount:
 lighthouse:
   network: mainnet
   role: beacon
+
+  metrics:
+    enabled: true
 
   beacon:
 
