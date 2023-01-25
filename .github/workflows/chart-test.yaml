@@ -40,7 +40,7 @@ jobs:
         uses: helm/chart-testing-action@v2
 
       - name: Lint chart
-        run: ct lint --config .github/ct.yaml --all
+        run: ct lint --config .github/ct.yaml --lint-conf ./.github/lintconf.yaml
 
       - name: Create kind cluster
         uses: helm/kind-action@v1
@@ -49,4 +49,4 @@ jobs:
           node_image: kindest/node:${{ matrix.K8S_VERSION }}
 
       - name: install chart
-        run: ct install --config .github/ct.yaml --all
+        run: ct install --config .github/ct.yaml

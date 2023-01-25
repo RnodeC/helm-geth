@@ -23,7 +23,7 @@ lighthouse:
 
   metrics:
     enabled: true
-  
+
   beacon:
 
     # use a checkpoint sync provider to speed up syncs from scratch
