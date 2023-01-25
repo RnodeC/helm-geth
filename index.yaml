@@ -16,6 +16,19 @@ entries:
     version: 0.3.0
   - apiVersion: v2
     appVersion: 1.10.26
+    created: "2023-01-25T11:55:09.828349841Z"
+    description: A Helm chart for running geth (ethereum execution engine)
+    digest: 7de15793ee98240dbe9784b07a63f862999b86d968271b442353e72fa31de604
+    maintainers:
+    - email: rnodec@pm.me
+      name: rnodec
+    name: geth
+    type: application
+    urls:
+    - https://github.com/RnodeC/helm-charts/releases/download/geth-0.1.1/geth-0.1.1.tgz
+    version: 0.1.1
+  - apiVersion: v2
+    appVersion: 1.10.26
     created: "2023-01-09T10:51:28.552998971Z"
     description: A Helm chart for running geth (ethereum execution engine)
     digest: cc215379fcd34db79fef135c4182b60179828b3cd3c442bd72adc4c42fb934a8
@@ -29,6 +42,19 @@ entries:
     version: 0.1.0
   lighthouse:
   - apiVersion: v2
+    appVersion: v3.4.0
+    created: "2023-01-25T11:55:09.962952148Z"
+    description: A Helm chart for running lighthouse (ethereum connsensus client)
+    digest: 093936103da5b7fbb4aa878edd77b808c3e44764b4613679be3164c8f36984a4
+    maintainers:
+    - email: rnodec@pm.me
+      name: rnodec
+    name: lighthouse
+    type: application
+    urls:
+    - https://github.com/RnodeC/helm-charts/releases/download/lighthouse-0.2.0/lighthouse-0.2.0.tgz
+    version: 0.2.0
+  - apiVersion: v2
     appVersion: v3.3.0
     created: "2023-01-09T10:51:28.728075247Z"
     description: A Helm chart for running lighthouse (ethereum connsensus client)
@@ -41,4 +67,4 @@ entries:
     urls:
     - https://github.com/RnodeC/helm-charts/releases/download/lighthouse-0.1.0/lighthouse-0.1.0.tgz
     version: 0.1.0
-generated: "2023-01-09T10:51:28.728084547Z"
+generated: "2023-01-25T11:55:09.962964148Z"
