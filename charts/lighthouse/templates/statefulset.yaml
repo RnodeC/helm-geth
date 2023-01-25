@@ -111,12 +111,7 @@ spec:
             - cat 
             - /chaindata/beacon/network/enr.dat
         resources:
-          limits:
-            cpu: 4
-            memory: 16Gi
-          requests:
-            cpu: 2
-            memory: 8Gi  
+          {{- toYaml .Values.resources | nindent 10 }}
         securityContext:
           seccompProfile:
             type: RuntimeDefault

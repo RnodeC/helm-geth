@@ -12,6 +12,22 @@ rbac:
 
 replicas: 1
 
+resources:
+  # These default resources are for testing purposes
+  # If you actually want to run a node, use the more realistic values which are commented out.
+  limits:
+    cpu: 2
+    memory: 4Gi
+  requests:
+    cpu: 1
+    memory: 2Gi     
+  # limits:
+  #   cpu: 4
+  #   memory: 24Gi
+  # requests:
+  #   cpu: 2
+  #   memory: 16Gi     
+
 serviceAccount:
   create: true
   name: geth

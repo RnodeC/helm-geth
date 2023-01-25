@@ -62,12 +62,7 @@ spec:
           tcpSocket:
             port: http
         resources:
-          limits:
-            cpu: 4
-            memory: 24Gi
-          requests:
-            cpu: 2
-            memory: 16Gi       
+          {{- toYaml .Values.resources | nindent 10 }} 
         securityContext:
           privileged: false
           allowPrivilegeEscalation: false
