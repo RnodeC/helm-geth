@@ -1,11 +1,11 @@
 ---
 image:
   repository: ethereum/client-go
-  tag: v1.10.26
+  tag: v1.11.6
 
 storage:
-  storageClassName: standard
-  pvcSize: 40Gi
+  storageClassName: local
+  pvcSize: 1200Gi
 
 rbac:
   create: true
@@ -16,11 +16,11 @@ resources:
   # These default resources are for testing purposes
   # If you actually want to run a node, use the more realistic values which are commented out.
   limits:
-    cpu: 2
-    memory: 4Gi
+    cpu: 8
+    memory: 16Gi
   requests:
-    cpu: 1
-    memory: 2Gi
+    cpu: 4
+    memory: 8Gi
   # limits:
   #   cpu: 4
   #   memory: 24Gi
@@ -35,8 +35,15 @@ serviceAccount:
 geth:
   network: mainnet
 
+  metrics:
+    enabled: true
+
+  http:
+    enabled: true
+
+  # this is the auth token for consensus clients
   # generate this value with: 'openssl rand -hex 32 | tr -d "\n"'
-  # if not jwt provided, geth will auto-generate a secret under /chaindata/geth/jwtsecret
+  # if no jwt provided, geth will auto-generate a secret under /chaindata/geth/jwtsecret
   # if you do provide the jwt, do not include the leading "0x"
   # jwt:
 

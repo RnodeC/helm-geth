@@ -26,41 +26,61 @@ spec:
         {{- with .Values.geth }}
         - --{{ .network }}
         - --datadir=/chaindata
+        - --authrpc.addr=0.0.0.0
+        - --authrpc.port=8551
+        - --authrpc.vhosts=*
+        - --authrpc.jwtsecret=/etc/eth2/jwt
+        {{- if .http.enabled }}
         - --http
         - --http.addr=0.0.0.0
         - --http.port=8545
         - --http.vhosts=*
-        - --authrpc.addr=0.0.0.0
-        - --authrpc.port=8551 
-        - --authrpc.vhosts=*
-        - --authrpc.jwtsecret=/etc/eth2/jwt
+        {{- end }}
         {{- if .ipcDisable }}
         - --ipcdisable
-        {{- end -}}
+        {{- end }}
+        {{- if .metrics.enabled }}
+        - --metrics
+        - --metrics.addr=0.0.0.0
+        - --metrics.port=6060
         {{- end }}
         imagePullPolicy: IfNotPresent
         ports:
+          - name: tcppeer
+            containerPort: 30303
+            protocol: TCP
+          - name: udppeer
+            containerPort: 30303
+            protocol: UDP
           - name: rpc
             containerPort: 8551
             protocol: TCP
+          {{- if .http.enabled }}
           - name: http
             containerPort: 8545
             protocol: TCP
+          {{- end }}
+          {{- if .metrics.enabled }}
+          - name: metrics
+            containerPort: 6060
+            protol: TCP
+          {{- end }}
+        {{- end }}
         livenessProbe:
           initialDelaySeconds: 60
           periodSeconds: 120
           terminationGracePeriodSeconds: 60
           tcpSocket:
-            port: http
+            port: rpc
         readinessProbe:
           initialDelaySeconds: 10
           periodSeconds: 10
           tcpSocket:
-            port: http
+            port: rpc
         startupProbe:
           initialDelaySeconds: 120
           tcpSocket:
-            port: http
+            port: rpc
         resources:
           {{- toYaml .Values.resources | nindent 10 }} 
         securityContext:
