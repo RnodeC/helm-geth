@@ -39,6 +39,15 @@ spec:
          secret:
            secretName: lh-jwt
       {{- end }}
+      {{- if eq $lhrole "validator" }}
+      affinity:
+        podAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            namespaces:
+            - {{ .Release.Namespace }}
+            labelSelector:
+{{ include "lighthouse.beacon-labels" . | indent 14 }}
+      {{- end }}
       containers:
       - name: lighthouse
         image: {{ include "lighthouse.image" . }}
@@ -150,6 +159,13 @@ spec:
         runAsNonRoot: true
         runAsUser: 1000
         fsGroup: 1000
+      {{- if eq $lhrole "validator" }}
+      volumes:
+      - name: chaindata
+        persistentVolumeClaim:
+          claimName: chaindata-lighthouse-beacon-0      
+      {{- end }}
+  {{- if eq $lhrole "beacon" }}
   volumeClaimTemplates:
   - apiVersion: v1
     metadata:
@@ -162,3 +178,4 @@ spec:
       resources:
         requests:
           storage: {{ .Values.storage.pvcSize }}
+  {{- end }}
