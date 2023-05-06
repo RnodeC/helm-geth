@@ -1,6 +1,24 @@
+{{- define "lighthouse.lhrole" -}}
+{{- $lhrole := .Values.lighthouse.role -}}
+{{- if not (or (eq $lhrole "beacon") (eq $lhrole "validator")) }}
+{{- required "lighthouse.role must be 'beacon' or 'validator'" "" }}
+{{- end -}}
+{{- $lhrole -}}
+{{- end -}}
+
+
 {{- define "lighthouse.labels" -}}
-app.kubernetes.io/name: {{ .Chart.Name }}
 app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end -}}
+
+{{- define "lighthouse.beacon-labels" -}}
+app.kubernetes.io/name: {{ .Chart.Name }}-beacon
+lhrole: beacon
+{{- end -}}
+
+{{- define "lighthouse.validator-labels" -}}
+app.kubernetes.io/name: {{ .Chart.Name }}-validator
+lhrole: validator
 {{- end -}}
 
 {{/*
@@ -41,4 +59,15 @@ Create execution endpoint string from provided host and port values
 {{- $host := .execution_endpoint.host -}}
 {{- $port := .execution_endpoint.port -}}
 {{- printf "http://%s:%c" $host $port -}}
+{{- end -}}
+
+{{/*
+Set metrics port based on the role
+*/}}
+{{- define "lighthouse.metricsPort" -}}
+{{- if eq .role "beacon" -}}
+5054
+{{- else if eq .role "validator" -}}
+5064
+{{- end -}}
 {{- end -}}

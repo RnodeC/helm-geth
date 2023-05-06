@@ -1,17 +1,22 @@
+{{- $lhrole := include "lighthouse.lhrole" . -}}
+{{- if eq $lhrole "beacon" -}}
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: lighthouse
+  name: lighthouse-beacon
   labels:
 {{ include "lighthouse.labels" . | indent 4 }}
+{{ include "lighthouse.beacon-labels" . | indent 4 }}
 spec:
   type: ClusterIP
   ports:
+    {{ if .Values.lighthouse.http.enabled -}}
     - port: 5052
       targetPort: http
       protocol: TCP
       name: http
+    {{- end }}
     - port: 9000
       targetPort: tcppeer
       protocol: TCP
@@ -20,6 +25,13 @@ spec:
       targetPort: udppeer
       protocol: UDP
       name: udppeer
+    {{- if .Values.lighthouse.metrics.enabled }}
+    - port: 5054
+      targetPort: metrics
+      name: metrics
+      protocol: TCP
+    {{- end }}
   selector:
 {{ include "lighthouse.labels" . | indent 4 }}
-
+{{ include "lighthouse.beacon-labels" . | indent 4 }}
+{{- end }}

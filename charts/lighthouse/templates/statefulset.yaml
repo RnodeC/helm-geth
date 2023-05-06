@@ -1,26 +1,37 @@
-{{- $lhrole := "beacon" -}}
-{{- if .Values.lighthouse.role -}}
-{{- $lhrole = .Values.lighthouse.role -}}
-{{- end -}}
+{{- $lhrole := include "lighthouse.lhrole" . -}}
 ---
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: lighthouse
+  name: lighthouse-{{ $lhrole }}
   labels:
 {{ include "lighthouse.labels" . | indent 4 }}
+{{ if eq $lhrole "beacon" -}}
+{{ include "lighthouse.beacon-labels" . | indent 4 }}
+{{- else if eq $lhrole "validator" -}}
+{{ include "lighthouse.validator-labels" . | indent 4 }}
+{{- end }}
 spec:
   replicas: {{ .Values.replicas }}
   serviceName: lighthouse
   selector:
     matchLabels:
 {{ include "lighthouse.labels" . | indent 6 }}
+{{ if eq $lhrole "beacon" -}}
+{{ include "lighthouse.beacon-labels" . | indent 6 }}
+{{- else if eq $lhrole "validator" -}}
+{{ include "lighthouse.validator-labels" . | indent 6 }}
+{{- end }}
   template:
     metadata:
       labels:
 {{ include "lighthouse.labels" . | indent 8 }}
+{{ if eq $lhrole "beacon" -}}
+{{ include "lighthouse.beacon-labels" . | indent 8 }}
+{{- else if eq $lhrole "validator" -}}
+{{ include "lighthouse.validator-labels" . | indent 8 }}
+{{- end }}
     spec:
-      serviceAccount: {{ include "lighthouse.serviceAccountName" . }}
       serviceAccountName: {{ include "lighthouse.serviceAccountName" . }}     
       {{- if eq $lhrole "beacon" }}
       volumes:
@@ -39,16 +50,20 @@ spec:
         {{ with .Values.lighthouse -}}
         - --network={{ .network }}
         - --datadir=/chaindata
-        {{ if .metrics.enabled }}
+        {{- if .http.enabled }}
+        - --http
+        {{- end }}
+        {{- if .metrics.enabled }}
+        {{- $metrics_port := include "lighthouse.metricsPort" (dict "role" $lhrole) }}
         - --metrics
         - --metrics-address=0.0.0.0
         - --metrics-allow-origin=*
+        - --metrics-port={{ $metrics_port }}
         {{- end }}
         {{- if eq $lhrole "beacon" }}
-        - --metrics-port=5054
-        - --http
         - --prune-payloads=false
         - --disable-upnp
+        - --validator-monitor-auto
         {{- $beacon := default dict .beacon -}}
         {{- if $beacon.execution_endpoint }}
         - --execution-endpoint=http://{{- $beacon.execution_endpoint.host -}}:{{- $beacon.execution_endpoint.port }}
@@ -57,36 +72,40 @@ spec:
         {{- if $beacon.checkpoint_sync.enabled }}
         - --checkpoint-sync-url={{- required "lighthouse.beacon.checkpoint_sync.url is required when checkpoint_sync is enabled" $beacon.checkpoint_sync.url -}}
         {{- end }}
-        {{- end }}
-        {{- if eq $lhrole "vc" }}
-        - --metrics-port=5064
-        {{ with .validator -}}
-        {{- if .graffiti }}
-        - --graffiti={{ .graffiti | quote }}
-        {{- end }}
-        {{- if .fee_recipient }}
-        - --suggested-fee-recipient={{ .fee_recipient | quote }}
+        {{- if $beacon.enr.host }}
+        - --enr-address={{- $beacon.enr.host }}
+        - --enr-udp-port={{- $beacon.enr.port }}
+        - --enr-tcp-port={{- $beacon.enr.port }}
         {{- end }}
         {{- end }}
+        {{- if eq $lhrole "validator" }}
+        {{- $validator := default dict .validator -}}
+        {{- if $validator.graffiti }}
+        - --graffiti={{ $validator.graffiti | quote }}
+        {{- end }}
+        {{- if $validator.fee_recipient }}
+        - --suggested-fee-recipient={{ $validator.fee_recipient | quote }}
         {{- end }}
         {{- end }}
         ports:
+          {{ if .http.enabled -}}
           - name: http
             containerPort: 5052
             protocol: TCP
+          {{- end }}
+          {{- if .metrics.enabled }}
+          {{- $metrics_port := include "lighthouse.metricsPort" (dict "role" $lhrole) }}
           - name: metrics
-            {{- if eq $lhrole "beacon" }}
-            containerPort: 5054
-            {{- else if eq $lhrole "vc" -}}
-            containerPort: 5064              
-            {{- end }}
+            containerPort: {{ $metrics_port }}
             protocol: TCP
+          {{- end }}
           - name: tcppeer
             containerPort: 9000
             protocol: TCP
           - name: udppeer
             containerPort: 9000
             protocol: UDP
+        {{- end }}
         livenessProbe:
           periodSeconds: 10
           initialDelaySeconds: 10

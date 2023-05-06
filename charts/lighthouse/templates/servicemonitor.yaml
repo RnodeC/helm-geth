@@ -1,0 +1,21 @@
+{{- if .Values.lighthouse.metrics.enabled -}}
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  labels:
+    prometheus: enabled
+    release: monitoring
+{{ include "lighthouse.labels" . | indent 4 }}
+  name: lighthouse-servicemonitor
+spec:
+  endpoints:
+  - port: metrics
+  jobLabel: app.kubernetes.io/name
+  selector:
+    matchLabels:
+{{ include "lighthouse.labels" . | indent 6 }}
+  namespaceSelector:
+    matchNames:
+      - {{ .Release.Namespace }}
+{{- end -}}

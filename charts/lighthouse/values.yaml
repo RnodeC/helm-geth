@@ -1,11 +1,15 @@
 ---
 image:
   repository: sigp/lighthouse
-  tag: v3.4.0
+  tag: v4.1.0
 
 storage:
-  storageClassName: standard
-  pvcSize: 40Gi
+  storageClassName: local
+  pvcSize: 1200Gi
+
+serviceAccount:
+  create: true
+  name: lighthouse
 
 rbac:
   create: true
@@ -13,24 +17,12 @@ rbac:
 replicas: 1
 
 resources:
-  # These default resources are for testing purposes
-  # If you actually want to run a node, use the more realistic values which are commented out.
   limits:
-    cpu: 2
-    memory: 4Gi
+    cpu: 5
+    memory: 12Gi
   requests:
-    cpu: 1
-    memory: 2Gi
-  # limits:
-  #   cpu: 4
-  #   memory: 16Gi
-  # requests:
-  #   cpu: 2
-  #   memory: 8Gi
-
-serviceAccount:
-  create: true
-  name: lighthouse
+    cpu: 2
+    memory: 8Gi
 
 lighthouse:
   network: mainnet
@@ -39,6 +31,10 @@ lighthouse:
   metrics:
     enabled: true
 
+  http: 
+    enabled: false
+
+  ### BEACON ###
   beacon:
 
     # use a checkpoint sync provider to speed up syncs from scratch
@@ -46,13 +42,22 @@ lighthouse:
       enabled: true
       url: https://mainnet.checkpoint.sigp.io
 
-    # all of these values are required if in beacon mode.  a consensus client requires an execution layer.
-    # however, if they are not provided, lighthouse pod should still deploy and run for long enough to satisfy liveness and readiness probes
+    # this defines the connection to the execution layer - required by a consensus client like lighthouse
+    # all of these values are required if in beacon mode
+    # however, if they are not provided, lighthouse pod should still deploy and run for long enough to satisfy liveness and readiness probes, so you can still check things out
     # jwt must not include a leading '0x'
-    # execution_endpoint:
+    execution_endpoint:
       # host:
       # port:
       # jwt:
-  # validator:
+
+    # you most likely want to set this 
+    # this is how eth peers will target you. this address and port must be accessible from the outside to your beacon node
+    enr:
+      host:
+      port: 9000
+  
+  ### VALIDATOR ###
+  validator:
   #  fee_recipient
   #  graffiti:
