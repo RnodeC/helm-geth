@@ -39,14 +39,26 @@ spec:
          secret:
            secretName: lh-jwt
       {{- end }}
-      {{- if eq $lhrole "validator" }}
       affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchLabels:
+                  app.kubernetes.io/name: geth
+              namespaces:
+              - geth
+              topologyKey: kubernetes.io/hostname
+      {{- if eq $lhrole "validator" }}
         podAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
-            namespaces:
+          - namespaces:
             - {{ .Release.Namespace }}
             labelSelector:
-{{ include "lighthouse.beacon-labels" . | indent 14 }}
+              matchLabels:
+{{ include "lighthouse.beacon-labels" . | indent 16 }}
+            topologyKey: kubernetes.io/hostname
       {{- end }}
       containers:
       - name: lighthouse
@@ -95,6 +107,7 @@ spec:
         {{- if $validator.fee_recipient }}
         - --suggested-fee-recipient={{ $validator.fee_recipient | quote }}
         {{- end }}
+        - --beacon-nodes=http://lighthouse-beacon.lighthouse:5052
         {{- end }}
         ports:
           {{ if .http.enabled -}}

@@ -25,11 +25,7 @@ lhrole: validator
 Create the name of the service account to use
 */}}
 {{- define "lighthouse.serviceAccountName" -}}
-{{- if .Values.serviceAccount.create -}}
-    {{ default "lighthouse" .Values.serviceAccount.name }}
-{{- else -}}
-    {{ default "default" .Values.serviceAccount.name }}
-{{- end -}}
+lighthouse
 {{- end -}}
 
 

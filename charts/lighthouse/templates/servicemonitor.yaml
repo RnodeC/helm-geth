@@ -1,4 +1,6 @@
-{{- if .Values.lighthouse.metrics.enabled -}}
+{{- if .Values.lighthouse.metrics.enabled }}
+{{- $existingServiceMonitor := lookup "monitoring.coreos.com/v1" "ServiceMonitor" .Release.Namespace "lighthouse-servicemonitor" }}
+{{- if not $existingServiceMonitor }}
 ---
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
@@ -18,4 +20,5 @@ spec:
   namespaceSelector:
     matchNames:
       - {{ .Release.Namespace }}
+{{- end -}}
 {{- end -}}

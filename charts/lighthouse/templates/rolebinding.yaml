@@ -1,0 +1,18 @@
+{{- $existingRoleBinding := lookup "rbac.authorization.k8s.io/v1" "RoleBinding" .Release.Namespace "lighthouse-ns-admin-binding" }}
+{{- if not $existingRoleBinding }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: lighthouse-ns-admin-binding
+  labels:
+{{ include "lighthouse.labels" . | indent 4 }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: namespace-admin
+subjects:
+  - kind: ServiceAccount
+    name: {{ include "lighthouse.serviceAccountName" . }}
+    namespace: {{ .Release.Namespace }}
+{{- end }}

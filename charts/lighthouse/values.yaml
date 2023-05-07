@@ -7,13 +7,6 @@ storage:
   storageClassName: local
   pvcSize: 1200Gi
 
-serviceAccount:
-  create: true
-  name: lighthouse
-
-rbac:
-  create: true
-
 replicas: 1
 
 resources:
@@ -32,14 +25,14 @@ lighthouse:
     enabled: true
 
   http: 
-    enabled: false
+    enabled: true
 
   ### BEACON ###
   beacon:
 
     # use a checkpoint sync provider to speed up syncs from scratch
     checkpoint_sync:
-      enabled: true
+      enabled: false
       url: https://mainnet.checkpoint.sigp.io
 
     # this defines the connection to the execution layer - required by a consensus client like lighthouse

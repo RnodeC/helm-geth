@@ -21,5 +21,3 @@ helm upgrade --install lighthouse-validator rnodec/lighthouse \
   --set lighthouse.validator.graffiti=mygraffiti \
   --set lighthouse.validator.suggested_fee_recipient=rnodec.eth # <- thats a joke, dont use that
 ```
-
-## Storage

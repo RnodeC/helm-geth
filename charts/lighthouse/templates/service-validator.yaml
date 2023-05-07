@@ -17,14 +17,6 @@ spec:
       protocol: TCP
       name: http
     {{- end }}
-    - port: 9000
-      targetPort: tcppeer
-      protocol: TCP
-      name: tcppeer
-    - port: 9000
-      targetPort: udppeer
-      protocol: UDP
-      name: udppeer
     {{- if .Values.lighthouse.metrics.enabled }}
     - port: 5064
       targetPort: metrics
