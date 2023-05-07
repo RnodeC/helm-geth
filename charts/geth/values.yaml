@@ -7,9 +7,6 @@ storage:
   storageClassName: local
   pvcSize: 1200Gi
 
-rbac:
-  create: true
-
 replicas: 1
 
 resources:
