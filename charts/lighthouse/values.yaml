@@ -22,7 +22,7 @@ lighthouse:
   role: beacon
 
   metrics:
-    enabled: true
+    enabled: false
 
   http:
     enabled: true

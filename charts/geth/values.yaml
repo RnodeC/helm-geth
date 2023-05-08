@@ -33,7 +33,7 @@ geth:
   network: mainnet
 
   metrics:
-    enabled: true
+    enabled: false
 
   http:
     enabled: true
