@@ -24,7 +24,7 @@ lighthouse:
   metrics:
     enabled: true
 
-  http: 
+  http:
     enabled: true
 
   ### BEACON ###
@@ -44,12 +44,12 @@ lighthouse:
       # port:
       # jwt:
 
-    # you most likely want to set this 
+    # you most likely want to set this
     # this is how eth peers will target you. this address and port must be accessible from the outside to your beacon node
     enr:
       host:
       port: 9000
-  
+
   ### VALIDATOR ###
   validator:
   #  fee_recipient
