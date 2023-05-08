@@ -1,3 +1,14 @@
 ---
 storage:
   storageClassName: "standard"
+  pvcSize: 10Gi
+
+resources:
+  # These default resources are for testing purposes
+  # If you actually want to run a node, use the more realistic values which are commented out.
+  limits:
+    cpu: 1
+    memory: 2Gi
+  requests:
+    cpu: 1
+    memory: 2Gi

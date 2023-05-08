@@ -25,10 +25,6 @@ resources:
   #   cpu: 2
   #   memory: 16Gi
 
-serviceAccount:
-  create: true
-  name: geth
-
 geth:
   network: mainnet
 
