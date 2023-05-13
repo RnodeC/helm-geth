@@ -17,6 +17,7 @@ spec:
       protocol: TCP
       name: http
     {{- end }}
+    {{- if not .Values.lighthouse.beacon.network.hostPorts }}
     - port: 9000
       targetPort: tcppeer
       protocol: TCP
@@ -25,6 +26,7 @@ spec:
       targetPort: udppeer
       protocol: UDP
       name: udppeer
+    {{- end }}
     {{- if .Values.lighthouse.metrics.enabled }}
     - port: 5054
       targetPort: metrics

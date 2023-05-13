@@ -24,7 +24,7 @@ spec:
         - geth
         args:
         {{- with .Values.geth }}
-        - --{{ .network }}
+        - --{{ .chain }}
         - --datadir=/chaindata
         - --authrpc.addr=0.0.0.0
         - --authrpc.port=8551

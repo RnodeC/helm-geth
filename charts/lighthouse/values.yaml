@@ -18,9 +18,12 @@ resources:
     memory: 8Gi
 
 lighthouse:
-  network: mainnet
+  chain: mainnet
   role: beacon
 
+  network:
+    hostPorts: false
+    
   metrics:
     enabled: false
 

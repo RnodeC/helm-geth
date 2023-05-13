@@ -69,7 +69,7 @@ spec:
         - {{ $lhrole }}
         args:
         {{ with .Values.lighthouse -}}
-        - --network={{ .network }}
+        - --network={{ .chain }}
         - --datadir=/chaindata
         {{- if .http.enabled }}
         - --http
@@ -98,7 +98,6 @@ spec:
         - --enr-udp-port={{- $beacon.enr.port }}
         - --enr-tcp-port={{- $beacon.enr.port }}
         {{- end }}
-        {{- end }}
         {{- if eq $lhrole "validator" }}
         {{- $validator := default dict .validator -}}
         {{- if $validator.graffiti }}
@@ -124,9 +123,16 @@ spec:
           - name: tcppeer
             containerPort: 9000
             protocol: TCP
+            {{- if $beacon.network.hostPorts }}
+            hostPort: 9000
+            {{- end }}
           - name: udppeer
             containerPort: 9000
             protocol: UDP
+            {{- if $beacon.network.hostPorts }}
+            hostPort: 9000
+            {{- end }}
+        {{- end }}
         {{- end }}
         livenessProbe:
           periodSeconds: 10
