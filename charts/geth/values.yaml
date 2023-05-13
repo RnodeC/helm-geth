@@ -26,7 +26,10 @@ resources:
   #   memory: 16Gi
 
 geth:
-  network: mainnet
+  chain: mainnet
+
+  network:
+    hostPorts: false
 
   metrics:
     enabled: false

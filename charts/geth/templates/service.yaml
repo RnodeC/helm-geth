@@ -12,6 +12,7 @@ spec:
       targetPort: rpc
       protocol: TCP
       name: rpc
+    {{- if not .Values.geth.network.hostPorts }}
     - port: 30303
       targetPort: tcppeer
       protocol: TCP
@@ -20,6 +21,7 @@ spec:
       targetPort: udppeer
       protocol: UDP
       name: udppeer
+    {{- end }}
     {{- if .Values.geth.http.enabled }}
     - port: 8545
       targetPort: http

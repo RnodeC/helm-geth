@@ -49,9 +49,15 @@ spec:
           - name: tcppeer
             containerPort: 30303
             protocol: TCP
+            {{- if .network.hostPorts }}
+            hostPort: 30303
+            {{- end }}
           - name: udppeer
             containerPort: 30303
             protocol: UDP
+            {{- if .network.hostPorts }}
+            hostPort: 30303
+            {{- end }}
           - name: rpc
             containerPort: 8551
             protocol: TCP
