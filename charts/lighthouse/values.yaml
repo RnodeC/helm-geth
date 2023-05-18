@@ -11,11 +11,11 @@ replicas: 1
 
 resources:
   limits:
-    cpu: 5
-    memory: 12Gi
+    cpu: 6
+    memory: 24Gi
   requests:
-    cpu: 2
-    memory: 8Gi
+    cpu: 3
+    memory: 16Gi
 
 lighthouse:
   chain: mainnet

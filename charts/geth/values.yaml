@@ -14,10 +14,10 @@ resources:
   # If you actually want to run a node, use the more realistic values which are commented out.
   limits:
     cpu: 8
-    memory: 16Gi
+    memory: 24Gi
   requests:
     cpu: 4
-    memory: 8Gi
+    memory: 16Gi
   # limits:
   #   cpu: 4
   #   memory: 24Gi
