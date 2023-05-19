@@ -28,14 +28,24 @@ resources:
 geth:
   chain: mainnet
 
-  network:
+  p2p:
     hostPorts: false
+    tcpPort: 30303
+    udpPort: 30303
 
+  rpc:
+    enabled: true
+    port: 8551
+    listenAddress: 0.0.0.0
+  
   metrics:
     enabled: false
+    port: 6060
 
   http:
     enabled: true
+    port: 8545
+    listenAddress: 0.0.0.0
 
   # this is the auth token for consensus clients
   # generate this value with: 'openssl rand -hex 32 | tr -d "\n"'

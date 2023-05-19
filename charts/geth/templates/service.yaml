@@ -8,28 +8,30 @@ metadata:
 spec:
   type: ClusterIP
   ports:
-    - port: 8551
+    {{- if .Values.geth.rpc.enabled }}
+    - port: {{ .Values.geth.rpc.port }}
       targetPort: rpc
       protocol: TCP
       name: rpc
-    {{- if not .Values.geth.network.hostPorts }}
-    - port: 30303
+    {{- end }}
+    {{- if not .Values.geth.p2p.hostPorts }}
+    - port: {{ .Values.geth.p2p.tcpPort }}
       targetPort: tcppeer
       protocol: TCP
       name: tcppeer
-    - port: 30303
+    - port: {{ .Values.geth.p2p.udpPort }}
       targetPort: udppeer
       protocol: UDP
       name: udppeer
     {{- end }}
     {{- if .Values.geth.http.enabled }}
-    - port: 8545
+    - port: {{ .Values.geth.http.port }}
       targetPort: http
       protocol: TCP
       name: http
     {{- end }}
     {{- if .Values.geth.metrics.enabled }}
-    - port: 6060
+    - port: {{ .Values.geth.metrics.port }}
       targetPort: metrics
       protocol: TCP
       name: metrics

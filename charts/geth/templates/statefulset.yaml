@@ -26,49 +26,55 @@ spec:
         {{- with .Values.geth }}
         - --{{ .chain }}
         - --datadir=/chaindata
-        - --authrpc.addr=0.0.0.0
-        - --authrpc.port=8551
+        - --discovery.port={{ .p2p.udpPort }}
+        - --port={{ .p2p.tcpPort }}
+        {{- if .rpc.enabled }}
+        - --authrpc.addr={{ .rpc.listenAddress }}
+        - --authrpc.port={{ .rpc.port }}
         - --authrpc.vhosts=*
         - --authrpc.jwtsecret=/etc/eth2/jwt
+        {{- end }}
         {{- if .http.enabled }}
         - --http
-        - --http.addr=0.0.0.0
-        - --http.port=8545
+        - --http.addr={{ .http.listenAddress }}
+        - --http.port={{ .http.port }}
         - --http.vhosts=*
-        {{- end }}
-        {{- if .ipcDisable }}
-        - --ipcdisable
         {{- end }}
         {{- if .metrics.enabled }}
         - --metrics
         - --metrics.addr=0.0.0.0
-        - --metrics.port=6060
+        - --metrics.port={{ .metrics.port }}
+        {{- end }}
+        {{- if .ipcDisable }}
+        - --ipcdisable
         {{- end }}
         imagePullPolicy: IfNotPresent
         ports:
           - name: tcppeer
-            containerPort: 30303
+            containerPort: {{ .p2p.tcpPort }}
             protocol: TCP
-            {{- if .network.hostPorts }}
-            hostPort: 30303
+            {{- if .p2p.hostPorts }}
+            hostPort: {{ .p2p.tcpPort }}
             {{- end }}
           - name: udppeer
-            containerPort: 30303
+            containerPort: {{ .p2p.udpPort }}
             protocol: UDP
-            {{- if .network.hostPorts }}
-            hostPort: 30303
+            {{- if .p2p.hostPorts }}
+            hostPort: {{ .p2p.udpPort }}
             {{- end }}
+          {{- if .rpc.enabled }}
           - name: rpc
-            containerPort: 8551
+            containerPort: {{ .rpc.port }}
             protocol: TCP
+          {{- end }}
           {{- if .http.enabled }}
           - name: http
-            containerPort: 8545
+            containerPort: {{ .http.port }}
             protocol: TCP
           {{- end }}
           {{- if .metrics.enabled }}
           - name: metrics
-            containerPort: 6060
+            containerPort: {{ .metrics.port }}
             protol: TCP
           {{- end }}
         {{- end }}
