@@ -24,7 +24,7 @@ spec:
         - geth
         args:
         {{- with .Values.geth }}
-        - --{{ .chain }}
+        - --{{ .network }}
         - --datadir=/chaindata
         - --discovery.port={{ .p2p.udpPort }}
         - --port={{ .p2p.tcpPort }}
@@ -81,18 +81,17 @@ spec:
         livenessProbe:
           initialDelaySeconds: 60
           periodSeconds: 120
-          terminationGracePeriodSeconds: 60
           tcpSocket:
-            port: rpc
+            port: tcppeer
         readinessProbe:
           initialDelaySeconds: 10
           periodSeconds: 10
           tcpSocket:
-            port: rpc
+            port: tcppeer
         startupProbe:
           initialDelaySeconds: 120
           tcpSocket:
-            port: rpc
+            port: tcppeer
         resources:
           {{- toYaml .Values.resources | nindent 10 }} 
         securityContext:
@@ -100,12 +99,13 @@ spec:
           allowPrivilegeEscalation: false
           capabilities:
             drop:  
-              - ALL
+            - ALL
         volumeMounts:
         - name: chaindata
           mountPath: /chaindata
         - name: jwt
           mountPath: /etc/eth2
+      terminationGracePeriodSeconds: 60
       securityContext:
         seccompProfile:
           type: RuntimeDefault
