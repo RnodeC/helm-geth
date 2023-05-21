@@ -1,6 +1,4 @@
 {{- if .Values.lighthouse.metrics.enabled }}
-{{- $existingServiceMonitor := lookup "monitoring.coreos.com/v1" "ServiceMonitor" .Release.Namespace "lighthouse-servicemonitor" }}
-{{- if not $existingServiceMonitor }}
 ---
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
@@ -12,13 +10,17 @@ metadata:
   name: lighthouse-servicemonitor
 spec:
   endpoints:
-  - port: metrics
+  {{- if .Values.lighthouse.beacon.enabled }}
+  - port: metrics-bn
+  {{- end }}
+  {{- if .Values.lighthouse.validator.enabled }}
+  - port: metrics-vc
+  {{- end }}
   jobLabel: app.kubernetes.io/name
   selector:
     matchLabels:
 {{ include "lighthouse.labels" . | indent 6 }}
   namespaceSelector:
     matchNames:
-      - {{ .Release.Namespace }}
-{{- end -}}
+    - {{ .Release.Namespace }}
 {{- end -}}

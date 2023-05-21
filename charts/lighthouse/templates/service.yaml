@@ -1,0 +1,51 @@
+{{- $metrics := default false .Values.lighthouse.metrics.enabled -}}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: lighthouse
+  labels:
+{{ include "lighthouse.labels" . | indent 4 }}
+spec:
+  type: ClusterIP
+  ports:
+    {{- if .Values.lighthouse.beacon.enabled }}
+    {{- if .Values.lighthouse.beacon.http.enabled }}
+    - port:  {{ .Values.lighthouse.beacon.http.port }}
+      targetPort: http-bn
+      protocol: TCP
+      name: http-bn
+    {{- end }}
+    {{- if not .Values.lighthouse.beacon.p2p.hostPorts }}
+    - port: {{ .Values.lighthouse.beacon.p2p.tcpPort }}
+      targetPort: tcppeer
+      protocol: TCP
+      name: tcppeer
+    - port: {{ .Values.lighthouse.beacon.p2p.udpPort }}
+      targetPort: udppeer
+      protocol: UDP
+      name: udppeer
+    {{- end }}
+    {{- if $metrics }}
+    - port: {{ .Values.lighthouse.beacon.metricsPort }}
+      targetPort: metrics-bn
+      name: metrics-bn
+      protocol: TCP
+    {{- end }}
+    {{- end }}
+    {{- if .Values.lighthouse.validator.enabled }}
+    {{- if $metrics }}
+    - port: {{ .Values.lighthouse.validator.metricsPort }}
+      targetPort: metrics-vc
+      name: metrics-vc
+      protocol: TCP
+    {{- end }}
+    {{ if .Values.lighthouse.validator.http.enabled -}}
+    - port: {{ .Values.lighthouse.validator.http.port }}
+      targetPort: http-vc
+      protocol: TCP
+      name: http-vc
+    {{- end }}
+    {{- end }}
+  selector:
+{{ include "lighthouse.labels" . | indent 4 }}
