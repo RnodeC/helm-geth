@@ -73,11 +73,13 @@ spec:
         {{- if .checkpoint_sync.enabled }}
         - --checkpoint-sync-url={{- required "lighthouse.beacon.checkpoint_sync.url is required when checkpoint_sync is enabled" .checkpoint_sync.url -}}
         {{- end }}
-        {{- if .enr.host }}
+        {{- with .enr }}
+        {{- if and .host .port }}
         - --disable-enr-auto-update
-        - --enr-address={{- .enr.host }}
-        - --enr-udp-port={{- .enr.port }}
-        - --enr-tcp-port={{- .enr.port }}
+        - --enr-address={{- .host }}
+        - --enr-udp-port={{- .port }}
+        - --enr-tcp-port={{- .port }}
+        {{- end }}
         {{- end }}
         ports:
           {{ if .http.enabled -}}

@@ -5,6 +5,3 @@ remote: origin
 target-branch: main
 chart-dirs:
   - charts
-test-values: |
-  geth=charts/geth/ci/values.yaml
-  lighthouse=charts/lighthouse/ci/values.yaml

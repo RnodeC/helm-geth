@@ -49,5 +49,5 @@ jobs:
           version: ${{ env.KIND_VERSION }}
           node_image: kindest/node:${{ matrix.K8S_VERSION }}
 
-      - name: install chart
+      - name: Install charts
         run: ct install --config .github/ct.yaml
