@@ -37,7 +37,7 @@ geth:
     enabled: true
     port: 8551
     listenAddress: 0.0.0.0
-  
+
   metrics:
     enabled: false
     port: 6060

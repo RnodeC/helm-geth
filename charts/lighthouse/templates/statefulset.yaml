@@ -20,7 +20,7 @@ spec:
       labels:
 {{ include "lighthouse.labels" . | indent 8 }}
     spec:
-      serviceAccountName: {{ include "lighthouse.serviceAccountName" . }}     
+      serviceAccountName: {{ include "lighthouse.serviceAccountName" . }}
       affinity:
         podAntiAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
@@ -37,8 +37,8 @@ spec:
       - name: lighthouse-bn
         image: {{ include "lighthouse.image" . }}
         imagePullPolicy: IfNotPresent
-        command: 
-        - lighthouse 
+        command:
+        - lighthouse
         - beacon
         args:
         {{ with .Values.lighthouse.beacon -}}
@@ -110,7 +110,7 @@ spec:
           initialDelaySeconds: 10
           successThreshold: 1
           exec:
-            command: 
+            command:
             - cat
             - /chaindata/beacon/network/enr.dat
         readinessProbe:
@@ -118,14 +118,14 @@ spec:
           initialDelaySeconds: 10
           successThreshold: 1
           exec:
-            command: 
-            - cat 
+            command:
+            - cat
             - /chaindata/beacon/network/enr.dat
         startupProbe:
           initialDelaySeconds: 120
           exec:
-            command: 
-            - cat 
+            command:
+            - cat
             - /chaindata/beacon/network/enr.dat
         resources:
           {{- toYaml .Values.lighthouse.beacon.resources | nindent 10 }}
@@ -135,7 +135,7 @@ spec:
           privileged: false
           allowPrivilegeEscalation: false
           capabilities:
-            drop:  
+            drop:
             - ALL
         volumeMounts:
         - name: chaindata
@@ -147,8 +147,8 @@ spec:
       - name: lighthouse-vc
         image: {{ include "lighthouse.image" . }}
         imagePullPolicy: IfNotPresent
-        command: 
-        - lighthouse 
+        command:
+        - lighthouse
         - vc
         args:
         {{ with .Values.lighthouse.validator -}}
@@ -191,7 +191,7 @@ spec:
           initialDelaySeconds: 10
           successThreshold: 1
           exec:
-            command: 
+            command:
             - cat
             - /chaindata/beacon/network/enr.dat
         readinessProbe:
@@ -199,14 +199,14 @@ spec:
           initialDelaySeconds: 10
           successThreshold: 1
           exec:
-            command: 
-            - cat 
+            command:
+            - cat
             - /chaindata/beacon/network/enr.dat
         startupProbe:
           initialDelaySeconds: 120
           exec:
-            command: 
-            - cat 
+            command:
+            - cat
             - /chaindata/beacon/network/enr.dat
         resources:
           {{- toYaml .Values.lighthouse.validator.resources | nindent 10 }}
@@ -216,7 +216,7 @@ spec:
           privileged: false
           allowPrivilegeEscalation: false
           capabilities:
-            drop:  
+            drop:
             - ALL
         volumeMounts:
         - name: chaindata

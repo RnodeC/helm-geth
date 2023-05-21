@@ -16,7 +16,7 @@ lighthouse:
 
   beacon:
     enabled: true
-    
+
     resources:
       limits:
         cpu: 6
@@ -24,9 +24,9 @@ lighthouse:
       requests:
         cpu: 3
         memory: 16Gi
-      
+
     metricsPort: 5054
-    
+
     http:
       enabled: true
       port: 5052
@@ -35,7 +35,7 @@ lighthouse:
       hostPorts: false
       tcpPort: 9000
       udpPort: 9000
-    
+
     # use a checkpoint sync provider to speed up syncs from scratch
     checkpoint_sync:
       enabled: false
@@ -70,9 +70,9 @@ lighthouse:
       requests:
         cpu: 3
         memory: 16Gi
-    
+
     metricsPort: 5064
-    
+
     http:
       enabled: true
       port: 5062
@@ -80,6 +80,6 @@ lighthouse:
     # if you are running the beacon node as part of this helm release, the beacon node container will be available in the same pod
     # otherwise, change this url
     beacon_node_url: http://localhost:5052
-    
+
     suggested_fee_recipient:
     graffiti:

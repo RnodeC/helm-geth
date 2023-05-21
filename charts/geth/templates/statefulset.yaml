@@ -20,7 +20,7 @@ spec:
       containers:
       - name: geth
         image: {{ include "geth.image" . }}
-        command: 
+        command:
         - geth
         args:
         {{- with .Values.geth }}
@@ -93,12 +93,12 @@ spec:
           tcpSocket:
             port: tcppeer
         resources:
-          {{- toYaml .Values.resources | nindent 10 }} 
+          {{- toYaml .Values.resources | nindent 10 }}
         securityContext:
           privileged: false
           allowPrivilegeEscalation: false
           capabilities:
-            drop:  
+            drop:
             - ALL
         volumeMounts:
         - name: chaindata
@@ -120,7 +120,7 @@ spec:
   - apiVersion: v1
     metadata:
       name: chaindata
-      labels:
+      labels:   
 {{ include "geth.labels" . | indent 8 }}
     spec:
       storageClassName: {{ .Values.storage.storageClassName }}
