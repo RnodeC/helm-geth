@@ -1,9 +1,10 @@
-{{- if .Values.rbac.create }}
+{{- $existingRole := lookup "rbac.authorization.k8s.io/v1" "Role" .Release.Namespace "namespace-admin" }}
+{{- if not $existingRole }}
 ---
 apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRole
+kind: Role
 metadata:
-  name: {{ include "lighthouse.serviceAccountName" . }}
+  name: namespace-admin
   labels:
 {{ include "lighthouse.labels" . | indent 4 }}
 rules:

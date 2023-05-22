@@ -1,7 +1,7 @@
-{{- $lhrole := "beacon" -}}
-{{- if .Values.lighthouse.role -}}
-{{- $lhrole = .Values.lighthouse.role -}}
-{{- end -}}
+{{- $bn := .Values.lighthouse.beacon.enabled -}}
+{{- $vc := .Values.lighthouse.validator.enabled -}}
+{{- $network := .Values.lighthouse.network -}}
+{{- $metrics := default false .Values.lighthouse.metrics.enabled -}}
 ---
 apiVersion: apps/v1
 kind: StatefulSet
@@ -10,7 +10,7 @@ metadata:
   labels:
 {{ include "lighthouse.labels" . | indent 4 }}
 spec:
-  replicas: {{ .Values.replicas }}
+  replicas: 1
   serviceName: lighthouse
   selector:
     matchLabels:
@@ -20,80 +20,97 @@ spec:
       labels:
 {{ include "lighthouse.labels" . | indent 8 }}
     spec:
-      serviceAccount: {{ include "lighthouse.serviceAccountName" . }}
-      serviceAccountName: {{ include "lighthouse.serviceAccountName" . }}     
-      {{- if eq $lhrole "beacon" }}
-      volumes:
-       - name: jwt
-         secret:
-           secretName: lh-jwt
-      {{- end }}
+      serviceAccountName: {{ include "lighthouse.serviceAccountName" . }}
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchLabels:
+                  app.kubernetes.io/name: geth
+              namespaces:
+              - geth
+              topologyKey: kubernetes.io/hostname
       containers:
-      - name: lighthouse
+      {{- if $bn }}
+      - name: lighthouse-bn
         image: {{ include "lighthouse.image" . }}
         imagePullPolicy: IfNotPresent
-        command: 
-        - lighthouse 
-        - {{ $lhrole }}
+        command:
+        - lighthouse
+        - beacon
         args:
-        {{ with .Values.lighthouse -}}
-        - --network={{ .network }}
+        {{ with .Values.lighthouse.beacon -}}
+        - --network={{ $network }}
         - --datadir=/chaindata
-        {{ if .metrics.enabled }}
+        - --discovery-port={{ .p2p.udpPort }}
+        - --port={{ .p2p.tcpPort }}
+        {{- if .http.enabled }}
+        - --http
+        - --http-address=0.0.0.0
+        - --http-port={{ .http.port }}
+        {{- end }}
+        {{- if $metrics }}
         - --metrics
         - --metrics-address=0.0.0.0
         - --metrics-allow-origin=*
+        - --metrics-port={{ .metricsPort }}
         {{- end }}
-        {{- if eq $lhrole "beacon" }}
-        - --metrics-port=5054
-        - --http
-        - --prune-payloads=false
+        - --prune-payloads={{ .prunePayloads }}
+        {{- if .disableUpnp }}
         - --disable-upnp
-        {{- $beacon := default dict .beacon -}}
-        {{- if $beacon.execution_endpoint }}
-        - --execution-endpoint=http://{{- $beacon.execution_endpoint.host -}}:{{- $beacon.execution_endpoint.port }}
+        {{- end }}
+        {{- if .validatorMonitorAuto }}
+        - --validator-monitor-auto
+        {{- end }}
+        {{- with .execution_endpoint }}
+        {{- if and .host .port }}
+        - --execution-endpoint=http://{{- .host -}}:{{- .port }}
         - --execution-jwt=/etc/eth2/jwt
         {{- end }}
-        {{- if $beacon.checkpoint_sync.enabled }}
-        - --checkpoint-sync-url={{- required "lighthouse.beacon.checkpoint_sync.url is required when checkpoint_sync is enabled" $beacon.checkpoint_sync.url -}}
         {{- end }}
+        {{- if .checkpoint_sync.enabled }}
+        - --checkpoint-sync-url={{- required "lighthouse.beacon.checkpoint_sync.url is required when checkpoint_sync is enabled" .checkpoint_sync.url -}}
         {{- end }}
-        {{- if eq $lhrole "vc" }}
-        - --metrics-port=5064
-        {{ with .validator -}}
-        {{- if .graffiti }}
-        - --graffiti={{ .graffiti | quote }}
-        {{- end }}
-        {{- if .fee_recipient }}
-        - --suggested-fee-recipient={{ .fee_recipient | quote }}
-        {{- end }}
-        {{- end }}
+        {{- with .enr }}
+        {{- if and .host .port }}
+        - --disable-enr-auto-update
+        - --enr-address={{- .host }}
+        - --enr-udp-port={{- .port }}
+        - --enr-tcp-port={{- .port }}
         {{- end }}
         {{- end }}
         ports:
-          - name: http
-            containerPort: 5052
+          {{ if .http.enabled -}}
+          - name: http-bn
+            containerPort: {{ .http.port }}
             protocol: TCP
-          - name: metrics
-            {{- if eq $lhrole "beacon" }}
-            containerPort: 5054
-            {{- else if eq $lhrole "vc" -}}
-            containerPort: 5064              
-            {{- end }}
+          {{- end }}
+          {{- if $metrics }}
+          - name: metrics-bn
+            containerPort: {{ .metricsPort }}
             protocol: TCP
+          {{- end }}
           - name: tcppeer
-            containerPort: 9000
+            containerPort: {{ .p2p.tcpPort }}
             protocol: TCP
+            {{- if .p2p.hostPorts }}
+            hostPort: {{ .p2p.tcpPort }}
+            {{- end }}
           - name: udppeer
-            containerPort: 9000
+            containerPort: {{ .p2p.udpPort }}
             protocol: UDP
+            {{- if .p2p.hostPorts }}
+            hostPort: {{ .p2p.udpPort }}
+            {{- end }}
+        {{- end }}
         livenessProbe:
           periodSeconds: 10
           initialDelaySeconds: 10
           successThreshold: 1
-          terminationGracePeriodSeconds: 60
           exec:
-            command: 
+            command:
             - cat
             - /chaindata/beacon/network/enr.dat
         readinessProbe:
@@ -101,36 +118,120 @@ spec:
           initialDelaySeconds: 10
           successThreshold: 1
           exec:
-            command: 
-            - cat 
+            command:
+            - cat
             - /chaindata/beacon/network/enr.dat
         startupProbe:
           initialDelaySeconds: 120
           exec:
-            command: 
-            - cat 
+            command:
+            - cat
             - /chaindata/beacon/network/enr.dat
         resources:
-          {{- toYaml .Values.resources | nindent 10 }}
+          {{- toYaml .Values.lighthouse.beacon.resources | nindent 10 }}
         securityContext:
           seccompProfile:
             type: RuntimeDefault
           privileged: false
           allowPrivilegeEscalation: false
           capabilities:
-            drop:  
-              - ALL
+            drop:
+            - ALL
         volumeMounts:
         - name: chaindata
           mountPath: /chaindata
-        {{- if eq $lhrole "beacon" }}
         - name: jwt
           mountPath: /etc/eth2
+      {{- end }}
+      {{- if $vc }}
+      - name: lighthouse-vc
+        image: {{ include "lighthouse.image" . }}
+        imagePullPolicy: IfNotPresent
+        command:
+        - lighthouse
+        - vc
+        args:
+        {{ with .Values.lighthouse.validator -}}
+        - --network={{ $network }}
+        - --datadir=/chaindata
+        {{- if .http.enabled }}
+        - --http
+        - --http-address=0.0.0.0
+        - --http-port={{ .http.port }}
         {{- end }}
+        {{- if $metrics }}
+        - --metrics
+        - --metrics-address=0.0.0.0
+        - --metrics-allow-origin=*
+        - --metrics-port={{ .metricsPort }}
+        {{- end }}
+        {{- if .graffiti }}
+        - --graffiti={{ .graffiti | quote }}
+        {{- end }}
+        {{- if .suggested_fee_recipient }}
+        - --suggested-fee-recipient={{ .suggested_fee_recipient }}
+        {{- end }}
+        - --beacon-nodes={{ .beacon_node_url }}
+        - --unencrypted-http-transport
+        ports:
+          {{ if .http.enabled -}}
+          - name: http-vc
+            containerPort: {{ .http.port }}
+            protocol: TCP
+          {{- end }}
+          {{- if $metrics }}
+          - name: metrics-vc
+            containerPort: {{ .metricsPort }}
+            protocol: TCP
+          {{- end }}
+        {{- end }}
+        {{- end }}
+        livenessProbe:
+          periodSeconds: 10
+          initialDelaySeconds: 10
+          successThreshold: 1
+          exec:
+            command:
+            - cat
+            - /chaindata/beacon/network/enr.dat
+        readinessProbe:
+          periodSeconds: 10
+          initialDelaySeconds: 10
+          successThreshold: 1
+          exec:
+            command:
+            - cat
+            - /chaindata/beacon/network/enr.dat
+        startupProbe:
+          initialDelaySeconds: 120
+          exec:
+            command:
+            - cat
+            - /chaindata/beacon/network/enr.dat
+        resources:
+          {{- toYaml .Values.lighthouse.validator.resources | nindent 10 }}
+        securityContext:
+          seccompProfile:
+            type: RuntimeDefault
+          privileged: false
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+        volumeMounts:
+        - name: chaindata
+          mountPath: /chaindata
       securityContext:
         runAsNonRoot: true
         runAsUser: 1000
         fsGroup: 1000
+      terminationGracePeriodSeconds: 60
+      {{- if $bn }}
+      volumes:
+       - name: jwt
+         secret:
+           secretName: lh-jwt
+      {{- end }}
   volumeClaimTemplates:
   - apiVersion: v1
     metadata:

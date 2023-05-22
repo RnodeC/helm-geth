@@ -7,11 +7,7 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 Create the name of the service account to use
 */}}
 {{- define "geth.serviceAccountName" -}}
-{{- if .Values.serviceAccount.create -}}
-    {{ default "geth" .Values.serviceAccount.name }}
-{{- else -}}
-    {{ default "default" .Values.serviceAccount.name }}
-{{- end -}}
+geth
 {{- end -}}
 
 {{/*

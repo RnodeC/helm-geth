@@ -10,7 +10,7 @@ on:
       - README.md
 
 env:
-  KIND_VERSION: v0.17.0
+  KIND_VERSION: v0.18.0
 
 jobs:
 
@@ -20,10 +20,8 @@ jobs:
       fail-fast: false
       matrix:
         K8S_VERSION:
-        - v1.22.15@sha256:7d9708c4b0873f0fe2e171e2b1b7f45ae89482617778c1c875f1053d4cef2e41
-        - v1.23.13@sha256:ef453bb7c79f0e3caba88d2067d4196f427794086a7d0df8df4f019d5e336b61
-        - v1.24.7@sha256:577c630ce8e509131eab1aea12c022190978dd2f745aac5eb1fe65c0807eb315
-        - v1.25.3@sha256:f52781bc0d7a19fb6c405c2af83abfeb311f130707a0e219175677e366cc45d1
+        - v1.25.8@sha256:00d3f5314cc35327706776e95b2f8e504198ce59ac545d0200a89e69fce10b7f
+        - v1.26.3@sha256:61b92f38dff6ccc29969e7aa154d34e38b89443af1a2c14e6cfbd2df6419c66f
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -51,5 +49,5 @@ jobs:
           version: ${{ env.KIND_VERSION }}
           node_image: kindest/node:${{ matrix.K8S_VERSION }}
 
-      - name: install chart
+      - name: Install charts
         run: ct install --config .github/ct.yaml

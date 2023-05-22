@@ -1,0 +1,22 @@
+{{- if .Values.geth.metrics.enabled -}}
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  labels:
+    prometheus: enabled
+    release: monitoring
+{{ include "geth.labels" . | indent 4 }}
+  name: geth-servicemonitor
+spec:
+  endpoints:
+  - port: metrics
+    path: /debug/metrics/prometheus
+  jobLabel: app.kubernetes.io/name
+  selector:
+    matchLabels:
+{{ include "geth.labels" . | indent 6 }}
+  namespaceSelector:
+    matchNames:
+      - {{ .Release.Namespace }}
+{{- end -}}
