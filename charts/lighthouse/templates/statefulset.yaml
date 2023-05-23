@@ -64,14 +64,14 @@ spec:
         {{- if .validatorMonitorAuto }}
         - --validator-monitor-auto
         {{- end }}
-        {{- with .execution_endpoint }}
+        {{- with .executionEndpoint }}
         {{- if and .host .port }}
         - --execution-endpoint=http://{{- .host -}}:{{- .port }}
         - --execution-jwt=/etc/eth2/jwt
         {{- end }}
         {{- end }}
-        {{- if .checkpoint_sync.enabled }}
-        - --checkpoint-sync-url={{- required "lighthouse.beacon.checkpoint_sync.url is required when checkpoint_sync is enabled" .checkpoint_sync.url -}}
+        {{- if .checkpointSync.enabled }}
+        - --checkpoint-sync-url={{- required "lighthouse.beacon.checkpointSync.url is required when checkpointSync is enabled" .checkpointSync.url -}}
         {{- end }}
         {{- with .enr }}
         {{- if and .host .port }}
@@ -171,10 +171,10 @@ spec:
         {{- if .graffiti }}
         - --graffiti={{ .graffiti | quote }}
         {{- end }}
-        {{- if .suggested_fee_recipient }}
-        - --suggested-fee-recipient={{ .suggested_fee_recipient }}
+        {{- if .suggestedFeeRecipient }}
+        - --suggested-fee-recipient={{ .suggestedFeeRecipient }}
         {{- end }}
-        - --beacon-nodes={{ .beacon_node_url }}
+        - --beacon-nodes={{ .beaconNodeUrl }}
         - --unencrypted-http-transport
         ports:
           {{ if .http.enabled -}}
