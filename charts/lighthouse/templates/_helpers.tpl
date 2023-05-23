@@ -26,8 +26,8 @@ Lookup jwt value from geth secret in this cluster, if one wasn't provided
 {{- define "lighthouse.jwt" -}}
 {{- $jwt := "faketoken" -}}
 {{- with .Values.lighthouse -}}
-{{- if and .beacon .beacon.execution_endpoint .beacon.execution_endpoint.jwt -}}
-{{- $jwt = .beacon.execution_endpoint.jwt -}}
+{{- if and .beacon .beacon.executionEndpoint .beacon.executionEndpoint.jwt -}}
+{{- $jwt = .beacon.executionEndpoint.jwt -}}
 {{- end -}}
 {{- end -}}
 {{ $jwt | b64enc | quote }}
