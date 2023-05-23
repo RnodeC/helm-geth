@@ -81,6 +81,9 @@ spec:
         - --enr-tcp-port={{- .port }}
         {{- end }}
         {{- end }}
+        {{- if .genesisBackfill }}
+        - --genesis-backfill
+        {{- end }}
         ports:
           {{ if .http.enabled -}}
           - name: http-bn

@@ -1,7 +1,7 @@
 ---
 image:
   repository: sigp/lighthouse
-  tag: v4.1.0
+  tag: v4.2.0
 
 storage:
   storageClassName: local
@@ -59,6 +59,7 @@ lighthouse:
     disableUpnp: true
     validatorMonitorAuto: true
     prunePayloads: true
+    genesisBackfill: false
 
   validator:
     enabled: false
