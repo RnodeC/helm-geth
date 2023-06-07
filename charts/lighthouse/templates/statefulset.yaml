@@ -73,6 +73,9 @@ spec:
         {{- if .checkpointSync.enabled }}
         - --checkpoint-sync-url={{- required "lighthouse.beacon.checkpointSync.url is required when checkpointSync is enabled" .checkpointSync.url -}}
         {{- end }}
+        {{- if .purgeDb }}
+        - --purge-db
+        {{- end }}
         {{- with .enr }}
         {{- if and .host .port }}
         - --disable-enr-auto-update
