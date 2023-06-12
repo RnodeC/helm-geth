@@ -49,10 +49,6 @@ spec:
         - --ipcdisable
         {{- end }}
         imagePullPolicy: IfNotPresent
-        lifecycle:
-          preStop:
-            exec:
-              command: ["/bin/sh", "-c", "kill -INT `pidof geth`"]
         ports:
           - name: tcppeer
             containerPort: {{ .p2p.tcpPort }}
@@ -124,7 +120,7 @@ spec:
   - apiVersion: v1
     metadata:
       name: chaindata
-      labels:
+      labels:   
 {{ include "geth.labels" . | indent 8 }}
     spec:
       storageClassName: {{ .Values.storage.storageClassName }}
