@@ -105,7 +105,7 @@ spec:
           mountPath: /chaindata
         - name: jwt
           mountPath: /etc/eth2
-      terminationGracePeriodSeconds: 60
+      terminationGracePeriodSeconds: 300
       securityContext:
         seccompProfile:
           type: RuntimeDefault
@@ -120,7 +120,7 @@ spec:
   - apiVersion: v1
     metadata:
       name: chaindata
-      labels:   
+      labels:
 {{ include "geth.labels" . | indent 8 }}
     spec:
       storageClassName: {{ .Values.storage.storageClassName }}
