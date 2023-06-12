@@ -231,7 +231,7 @@ spec:
         runAsNonRoot: true
         runAsUser: 1000
         fsGroup: 1000
-      terminationGracePeriodSeconds: 60
+      terminationGracePeriodSeconds: 300
       {{- if $bn }}
       volumes:
        - name: jwt
