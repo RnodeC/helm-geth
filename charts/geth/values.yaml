@@ -1,7 +1,7 @@
 ---
 image:
   repository: ethereum/client-go
-  tag: v1.12.1
+  tag: v1.12.2
 
 storage:
   storageClassName: local
