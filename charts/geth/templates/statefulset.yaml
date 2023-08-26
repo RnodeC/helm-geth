@@ -112,6 +112,7 @@ spec:
         runAsNonRoot: true
         runAsUser: 1000
         fsGroup: 1000
+        readOnlyRootFilesystem: 'true'
       volumes:
        - name: jwt
          secret:
