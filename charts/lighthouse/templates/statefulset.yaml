@@ -2,6 +2,7 @@
 {{- $vc := .Values.lighthouse.validator.enabled -}}
 {{- $network := .Values.lighthouse.network -}}
 {{- $metrics := default false .Values.lighthouse.metrics.enabled -}}
+{{- $monitoringEndpoint := .Values.lighthouse.monitoringEndpoint -}}
 ---
 apiVersion: apps/v1
 kind: StatefulSet
@@ -86,6 +87,9 @@ spec:
         {{- end }}
         {{- if .genesisBackfill }}
         - --genesis-backfill
+        {{- end }}
+        {{- if $monitoringEndpoint }}
+        - --monitoring-endpoint={{- $monitoringEndpoint }}
         {{- end }}
         ports:
           {{ if .http.enabled -}}
@@ -179,6 +183,9 @@ spec:
         {{- end }}
         - --beacon-nodes={{ .beaconNodeUrl }}
         - --unencrypted-http-transport
+        {{- if $monitoringEndpoint }}
+        - --monitoring-endpoint={{- $monitoringEndpoint }}
+        {{- end }}
         ports:
           {{ if .http.enabled -}}
           - name: http-vc
