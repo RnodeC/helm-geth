@@ -2,7 +2,7 @@
 {{- $vc := .Values.lighthouse.validator.enabled -}}
 {{- $network := .Values.lighthouse.network -}}
 {{- $metrics := default false .Values.lighthouse.metrics.enabled -}}
-{{- $monitoringEndpoint := default '' .Values.monitoringEndpoint -}}
+{{- $monitoringEndpoint := .Values.lighthouse.monitoringEndpoint -}}
 ---
 apiVersion: apps/v1
 kind: StatefulSet
