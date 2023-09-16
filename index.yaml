@@ -94,6 +94,19 @@ entries:
     version: 0.1.0
   lighthouse:
   - apiVersion: v2
+    appVersion: v4.4.1
+    created: "2023-09-16T14:37:38.724346179Z"
+    description: A Helm chart for running lighthouse (ethereum connsensus client)
+    digest: 242059ebf91408ea9e067af030d043798e8d29eeced870fa84b35db3d9b4be2a
+    maintainers:
+    - email: rnodec@pm.me
+      name: rnodec
+    name: lighthouse
+    type: application
+    urls:
+    - https://github.com/RnodeC/helm-charts/releases/download/lighthouse-0.5.0/lighthouse-0.5.0.tgz
+    version: 0.5.0
+  - apiVersion: v2
     appVersion: v4.3.0
     created: "2023-07-08T12:57:16.481057859Z"
     description: A Helm chart for running lighthouse (ethereum connsensus client)
@@ -184,4 +197,4 @@ entries:
     urls:
     - https://github.com/RnodeC/helm-charts/releases/download/lighthouse-0.1.0/lighthouse-0.1.0.tgz
     version: 0.1.0
-generated: "2023-08-26T18:40:56.423963498Z"
+generated: "2023-09-16T14:37:38.724380679Z"
