@@ -3,14 +3,14 @@ name: Chart Testing
 
 on:
   pull_request:
-    types: 
+    types:
       - opened
       - synchronize
     paths-ignore:
       - README.md
 
 env:
-  KIND_VERSION: v0.18.0
+  KIND_VERSION: v0.20.0
 
 jobs:
 
@@ -20,14 +20,14 @@ jobs:
       fail-fast: false
       matrix:
         K8S_VERSION:
-        - v1.25.8@sha256:00d3f5314cc35327706776e95b2f8e504198ce59ac545d0200a89e69fce10b7f
-        - v1.26.3@sha256:61b92f38dff6ccc29969e7aa154d34e38b89443af1a2c14e6cfbd2df6419c66f
+        - v1.26.6@sha256:6e2d8b28a5b601defe327b98bd1c2d1930b49e5d8c512e1895099e4504007adb
+        - v1.27.3@sha256:3966ac761ae0136263ffdb6cfd4db23ef8a83cba8a463690e98317add2c9ba72
     steps:
       - name: Checkout
         uses: actions/checkout@v3
         with:
           fetch-depth: "0"
-          
+
       - name: Set up Helm
         uses: azure/setup-helm@v3
 
@@ -39,7 +39,7 @@ jobs:
       - name: Set up chart-testing
         uses: helm/chart-testing-action@v2
 
-      # docker run -it --rm -v $(pwd):/test --workdir /test quay.io/helmpack/chart-testing ct lint --all --lint-conf ./.github/lintconf.yaml 
+      # docker run -it --rm -v $(pwd):/test --workdir /test quay.io/helmpack/chart-testing ct lint --all --lint-conf ./.github/lintconf.yaml
       - name: Lint chart
         run: ct lint --config .github/ct.yaml --lint-conf .github/lintconf.yaml
 
