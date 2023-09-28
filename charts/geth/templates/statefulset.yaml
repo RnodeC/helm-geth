@@ -105,6 +105,7 @@ spec:
           mountPath: /chaindata
         - name: jwt
           mountPath: /etc/eth2
+      enableServiceLinks: false
       terminationGracePeriodSeconds: 300
       securityContext:
         seccompProfile:
