@@ -28,6 +28,7 @@ spec:
         - --datadir=/chaindata
         - --discovery.port={{ .p2p.udpPort }}
         - --port={{ .p2p.tcpPort }}
+        - --state.scheme=path
         {{- if .rpc.enabled }}
         - --authrpc.addr={{ .rpc.listenAddress }}
         - --authrpc.port={{ .rpc.port }}
