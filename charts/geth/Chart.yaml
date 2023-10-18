@@ -4,9 +4,9 @@ description: A Helm chart for running geth (ethereum execution engine)
 
 type: application
 
-version: "0.6.1"
+version: "0.6.2"
 
-appVersion: "1.13.3"
+appVersion: "1.13.4"
 
 maintainers:
 - email: rnodec@pm.me
