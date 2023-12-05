@@ -1,0 +1,33 @@
+---
+name: Latest Release
+description: Gets latest release of given repo
+
+inputs:
+  repo_owner:
+    description: The repo owner
+    required: true
+  repo_name:
+    description: The repo name
+    required: true
+
+outputs:
+  latest_release:
+    description: The latest release
+    value: ${{ steps.get-release.outputs.result }}
+
+runs:
+  using: 'composite'
+  steps:
+
+  - name: Get latest repo release
+    id: get-release
+    uses: actions/github-script@v5
+    with:
+      script: |
+        const repoOwner = ${{ inputs.repo_owner }}; // Replace with the owner's username
+        const repoName = ${{ inputs.repo_name }}; // Replace with the repository name
+        const response = await github.rest.repos.getLatestRelease({
+          owner: repoOwner,
+          repo: repoName,
+        });
+        return response.data.tag_name;

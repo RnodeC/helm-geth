@@ -1,0 +1,40 @@
+---
+name: Auto Updater
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '* 16 * * 2'  # 4:00pm utc daily
+
+
+jobs:
+
+  auto-updater:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - chart_name: 'lighthouse'
+            repo_owner: 'sigp'
+            repo_name: 'lighthouse'
+          - chart_name: 'geth'
+            repo_owner: 'ethereum'
+            repo_name: 'go-ethereum'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Get latest chart version
+        id: latest
+        uses: .github/actions/get-latest-release@main
+        with:
+          repo_owner: ${{ matrix.repo_owner }}
+          repo_name: ${{ matrix.repo_name }}
+
+      - name: Log latest version
+        run: |
+          echo "# ${{ inputs.chart_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "Latest available version: ${{ steps.latest.outputs.latest_version }}"
+        shell: bash
