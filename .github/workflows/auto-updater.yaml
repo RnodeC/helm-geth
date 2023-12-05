@@ -26,6 +26,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: debug
+        run: |
+          pwd
+          ls -laR
+          echo "${{ toJson(github) }}"
+        shell: bash
+
       - name: Get latest chart version
         id: latest
         uses: .github/actions/get-latest-release@main
