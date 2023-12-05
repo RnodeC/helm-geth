@@ -35,6 +35,6 @@ jobs:
 
       - name: Log latest version
         run: |
-          echo "# ${{ inputs.chart_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "# ${{ matrix.chart_name }}" >> $GITHUB_STEP_SUMMARY
           echo "Latest available version: ${{ steps.latest.outputs.latest_version }}"
         shell: bash
