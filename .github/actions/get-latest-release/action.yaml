@@ -11,23 +11,51 @@ inputs:
     required: true
 
 outputs:
-  latest_release:
+  version:
     description: The latest release
     value: ${{ steps.get-release.outputs.result }}
 
 runs:
   using: 'composite'
   steps:
-
-  - name: Get latest repo release
-    id: get-release
-    uses: actions/github-script@v5
+  - id: context
+    uses: actions/github-script@v7
     with:
+      script: console.log(context)
+
+  - run: |
+      echo "context=${{ toJson(steps.context.outputs.result) }}"
+    shell: bash
+
+  - id: my-script
+    uses: actions/github-script@v7
+    with:
+      result-encoding: string
+      script: return "I will be string (not JSON) encoded!"
+
+  - run: |
+      echo '${{ steps.my-script.outputs.result }}'
+    shell: bash
+
+  - id: get-release
+    uses: actions/github-script@v7
+    with:
+      result-encoding: string
       script: |
-        const repoOwner = ${{ inputs.repo_owner }}; // Replace with the owner's username
-        const repoName = ${{ inputs.repo_name }}; // Replace with the repository name
-        const response = await github.rest.repos.getLatestRelease({
-          owner: repoOwner,
-          repo: repoName,
-        });
-        return response.data.tag_name;
+        const repoOwner = '${{ inputs.repo_owner }}';
+        const repoName = '${{ inputs.repo_name }}';
+        try {
+          const response = await github.rest.repos.getLatestRelease({
+            owner: repoOwner,
+            repo: repoName,
+          });
+          console.log('Latest Release:', response.data);
+          return response.data.tag_name;
+        } catch (error) {
+          console.error('Error fetching latest release:', error);
+          return 'Error fetching release';
+        }
+
+  - run: |
+      echo "Latest Release: ${{ steps.get-release.outputs.result }}"
+    shell: bash

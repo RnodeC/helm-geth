@@ -8,6 +8,7 @@ on:
       - synchronize
     paths-ignore:
       - README.md
+      - .github/**
 
 env:
   KIND_VERSION: v0.20.0
