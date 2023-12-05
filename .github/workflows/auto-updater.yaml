@@ -35,7 +35,7 @@ jobs:
 
       - name: Get latest chart version
         id: latest
-        uses: .github/actions/get-latest-release@main
+        uses: .github/actions/get-latest-release
         with:
           repo_owner: ${{ matrix.repo_owner }}
           repo_name: ${{ matrix.repo_name }}
