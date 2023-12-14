@@ -146,7 +146,7 @@ jobs:
           new_chart_version=$(semver -i ${{ steps.comp.outputs.change_level }} $current_chart_version)
           [ -z $new_chart_version ] && echo "[ERROR] could not increment current_chart_version: " && semver -i ${{ steps.comp.outputs.change_level }} $current_chart_version && exit 1
           echo "[INFO] bumping version from $current_chart_version to $new_chart_version in ${{ matrix.chart_name }}/Chart.yaml (change level was ${{ steps.comp.outputs.change_level }})"
-          yq -i ".version = \"$new_chart_version\""' charts/${{ matrix.chart_name }}/Chart.yaml
+          yq -i ".version = \"$new_chart_version\"" charts/${{ matrix.chart_name }}/Chart.yaml
 
           # commit and push changes, and create a PR
           git config --global user.email "rnodec@pm.me"
