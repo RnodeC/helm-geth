@@ -37,7 +37,7 @@ jobs:
         uses: azure/setup-helm@v3
 
       - name: Set up chart-testing
-        uses: helm/chart-testing-action@v2
+        uses: helm/chart-testing-action@v2.6.1
 
       # docker run -it --rm -v $(pwd):/test --workdir /test quay.io/helmpack/chart-testing ct lint --all --lint-conf ./.github/lintconf.yaml
       - name: Lint chart
