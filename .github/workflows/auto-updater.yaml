@@ -137,9 +137,12 @@ jobs:
           yq -i '.version = "$new_chart_version"' charts/${{ matrix.chart_name }}/Chart.yaml
 
           # commit and push changes, and create a PR
+          git config --global user.email "rnodec@pm.me"
+          git config --global user.name "rnodec"
           git status
           git commit -a -m "${{ steps.comp.outputs.change_level }}: bump ${{ matrix.chart_name }} to $new_version"
           git push -u origin $branch_name
+
 
           gh pr create \
             -B main \
