@@ -120,8 +120,8 @@ jobs:
           new_version: ${{ steps.latest.outputs.version }}
           branch_name: ${{ matrix.chart_name }}/${{ steps.latest.outputs.version }}
         run: |
-          b=$(git ls-remote --heads origin $branch_name)
-          if [ -z $b ]; then
+          branch_exists=$(git ls-remote --heads origin $branch_name)
+          if [ -n $branch_exists ]; then
             echo "[INFO] Branch $branch_name already exists. Exiting gracefully." >> $GITHUB_STEP_SUMMARY
             exit 0
           fi
