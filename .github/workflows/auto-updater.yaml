@@ -91,7 +91,7 @@ jobs:
           echo "version_diff=$version_diff"
 
           if [ -z "$version_diff" ]; then
-            echo "$c == $n, this is a no-op" >> $GITHUB_STEP_SUMMARY
+            echo "no-op" >> $GITHUB_STEP_SUMMARY
             diff=false
           else
             echo "[INFO] $n is newer than $c"
