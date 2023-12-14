@@ -146,6 +146,6 @@ jobs:
             -H $branch_name \
             --title 'Bump ${{ matrix.chart_name }} from $current_version to $new_version' \
             --body 'Created by Github actions - auto-updater'
-          gh pr show
-          echo "[INFO] Creating pr: " >> $GITHUB_SUMMARY
+          url=$(gh pr view -q .url --json url)
+          echo "[INFO] Creating pr: $url" >> $GITHUB_SUMMARY
         shell: bash
