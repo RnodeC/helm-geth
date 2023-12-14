@@ -120,12 +120,14 @@ jobs:
           new_version: ${{ steps.latest.outputs.version }}
           branch_name: ${{ matrix.chart_name }}/${{ steps.latest.outputs.version }}
         run: |
-          branch_exists=$(git ls-remote --heads origin $branch_name)
-          if [ -n $branch_exists ]; then
+          set +e
+          git ls-remote --exit-code --heads origin $branch_name
+          if [ $? -eq 0 ]; then
             echo "[INFO] Branch $branch_name already exists. Exiting gracefully." >> $GITHUB_STEP_SUMMARY
             exit 0
           fi
-
+          set -e
+          
           git checkout -b $branch_name
 
           # bump image tag in values.yaml
