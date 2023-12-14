@@ -127,7 +127,7 @@ jobs:
             exit 0
           fi
           set -e
-          
+
           git checkout -b $branch_name
 
           # bump image tag in values.yaml
@@ -149,10 +149,14 @@ jobs:
           # commit and push changes, and create a PR
           git config --global user.email "rnodec@pm.me"
           git config --global user.name "rnodec"
+          echo "[INFO] git status:"
           git status
+          echo "[INFO] commiting changes"
           git commit -a -m "${{ steps.comp.outputs.change_level }}: bump ${{ matrix.chart_name }} to $new_version"
+          echo "[INFO] pushing changes"
           git push -u origin $branch_name
 
+          echo "[INFO] creating PR"
           gh pr create \
             -B main \
             -H $branch_name \
