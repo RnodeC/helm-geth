@@ -48,22 +48,12 @@ jobs:
           echo "Current version: $version" >> $GITHUB_STEP_SUMMARY
         shell: bash
 
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          path: actions
-          ref: ${{ github.sha }}
-
       - name: Get latest chart version
         id: latest
-        uses: ./actions/.github/actions/get-latest-release
+        uses: ./.github/actions/get-latest-release
         with:
           repo_owner: ${{ matrix.repo_owner }}
           repo_name: ${{ matrix.repo_name }}
-
-      - name: Remove actions dir
-        run: rm -rf ./actions
-        shell: bash
 
       - name: Log latest version
         run: |
@@ -125,11 +115,19 @@ jobs:
       - name: Make changes and create pull request
         if: steps.comp.outputs.diff == 'true'
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.RNODEC_AUTO_PAT }}
           current_version: ${{ steps.current.outputs.version }}
           new_version: ${{ steps.latest.outputs.version }}
           branch_name: ${{ matrix.chart_name }}/${{ steps.latest.outputs.version }}
         run: |
+          set +e
+          git ls-remote --exit-code --heads origin $branch_name
+          if [ $? -eq 0 ]; then
+            echo "[INFO] Branch $branch_name already exists. Exiting gracefully." >> $GITHUB_STEP_SUMMARY
+            exit 0
+          fi
+          set -e
+
           git checkout -b $branch_name
 
           # bump image tag in values.yaml
@@ -151,10 +149,14 @@ jobs:
           # commit and push changes, and create a PR
           git config --global user.email "rnodec@pm.me"
           git config --global user.name "rnodec"
+          echo "[INFO] git status:"
           git status
+          echo "[INFO] commiting changes"
           git commit -a -m "${{ steps.comp.outputs.change_level }}: bump ${{ matrix.chart_name }} to $new_version"
+          echo "[INFO] pushing changes"
           git push -u origin $branch_name
 
+          echo "[INFO] creating PR"
           gh pr create \
             -B main \
             -H $branch_name \
