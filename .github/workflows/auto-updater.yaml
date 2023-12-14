@@ -42,6 +42,7 @@ jobs:
       - name: Get current version as defined in helm chart
         id: current
         run: |
+          echo "# ${{ matrix.chart_name }}" >> $GITHUB_STEP_SUMMARY
           version=$(yq '.image.tag' charts/${{ matrix.chart_name }}/values.yaml)
           echo "version=$version" >> $GITHUB_OUTPUT
           echo "Current version: $version" >> $GITHUB_STEP_SUMMARY
@@ -66,7 +67,6 @@ jobs:
 
       - name: Log latest version
         run: |
-          echo "# ${{ matrix.chart_name }}" >> $GITHUB_STEP_SUMMARY
           echo "Latest available version: ${{ steps.latest.outputs.version }}" >> $GITHUB_STEP_SUMMARY
         shell: bash
 
@@ -134,11 +134,11 @@ jobs:
 
           # bump image tag in values.yaml
           echo "[INFO] bumping image.tag from $current_version to $new_version in ${{ matrix.chart_name }}/values.yaml"
-          yq -i '.image.tag = "$new_version"' charts/${{ matrix.chart_name }}/values.yaml
+          yq -i ".image.tag = \"$new_version\"" charts/${{ matrix.chart_name }}/values.yaml
 
           # bump app version in Chart.yaml
           echo "[INFO] bumping appVersion from $current_version to $new_version in ${{ matrix.chart_name }}/Chart.yaml"
-          yq -i '.appVersion = "$new_version"' charts/${{ matrix.chart_name }}/Chart.yaml
+          yq -i ".appVersion = \"$new_version\"" charts/${{ matrix.chart_name }}/Chart.yaml
 
           # bump chart version in Chart.yaml
           current_chart_version=$(yq '.version' charts/${{ matrix.chart_name }}/Chart.yaml)
@@ -146,7 +146,7 @@ jobs:
           new_chart_version=$(semver -i ${{ steps.comp.outputs.change_level }} $current_chart_version)
           [ -z $new_chart_version ] && echo "[ERROR] could not increment current_chart_version: " && semver -i ${{ steps.comp.outputs.change_level }} $current_chart_version && exit 1
           echo "[INFO] bumping version from $current_chart_version to $new_chart_version in ${{ matrix.chart_name }}/Chart.yaml (change level was ${{ steps.comp.outputs.change_level }})"
-          yq -i '.version = "$new_chart_version"' charts/${{ matrix.chart_name }}/Chart.yaml
+          yq -i ".version = \"$new_chart_version\""' charts/${{ matrix.chart_name }}/Chart.yaml
 
           # commit and push changes, and create a PR
           git config --global user.email "rnodec@pm.me"
@@ -158,7 +158,7 @@ jobs:
           gh pr create \
             -B main \
             -H $branch_name \
-            --title 'Bump ${{ matrix.chart_name }} from $current_version to $new_version' \
+            --title "Bump ${{ matrix.chart_name }} from $current_version to $new_version" \
             --body 'Created by Github actions - auto-updater'
           url=$(gh pr view -q .url --json url)
           echo "Creating pr: $url" >> $GITHUB_STEP_SUMMARY
