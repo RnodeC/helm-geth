@@ -25,6 +25,12 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Install SemVer
+        run: npm install -g semver
+        shell: bash
 
       - name: debug
         run: |
@@ -33,15 +39,127 @@ jobs:
           echo "${{ toJson(github) }}"
         shell: bash
 
+      - name: Get current version as defined in helm chart
+        id: current
+        run: |
+          echo "# ${{ matrix.chart_name }}" >> $GITHUB_STEP_SUMMARY
+          version=$(yq '.image.tag' charts/${{ matrix.chart_name }}/values.yaml)
+          echo "version=$version" >> $GITHUB_OUTPUT
+          echo "Current version: $version" >> $GITHUB_STEP_SUMMARY
+        shell: bash
+
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          path: actions
+          ref: ${{ github.sha }}
+
       - name: Get latest chart version
         id: latest
-        uses: .github/actions/get-latest-release
+        uses: ./actions/.github/actions/get-latest-release
         with:
           repo_owner: ${{ matrix.repo_owner }}
           repo_name: ${{ matrix.repo_name }}
 
+      - name: Remove actions dir
+        run: rm -rf ./actions
+        shell: bash
+
       - name: Log latest version
         run: |
-          echo "# ${{ matrix.chart_name }}" >> $GITHUB_STEP_SUMMARY
-          echo "Latest available version: ${{ steps.latest.outputs.latest_version }}"
+          echo "Latest available version: ${{ steps.latest.outputs.version }}" >> $GITHUB_STEP_SUMMARY
+        shell: bash
+
+      - name: Compare current and latest versions
+        id: comp
+        env:
+          current_version: ${{ steps.current.outputs.version }}
+          new_version: ${{ steps.latest.outputs.version }}
+        run: |
+          # remove leading 'v' from versions for easier comparison
+          set +e
+
+          echo $v1
+          c="${current_version#v}"
+          n="${new_version#v}"
+          echo "c=$c"
+          echo "n=$n"
+
+          # determine if current and latest differ
+          echo "[INFO] Checking if $n is newer than $c"
+          version_diff=$(semver -r ">${c}" "$n")
+          echo "version_diff=$version_diff"
+
+          if [ -z "$version_diff" ]; then
+            echo "no-op" >> $GITHUB_STEP_SUMMARY
+            diff=false
+          else
+            echo "[INFO] $n is newer than $c"
+            diff=true
+
+            # Split the versions into major, minor, and patch numbers
+            IFS='.' read -r v1_major v1_minor v1_patch <<< "$c"
+            IFS='.' read -r v2_major v2_minor v2_patch <<< "$n"
+
+            # Compare major, minor, and patch numbers
+            if [ "$v1_major" -ne "$v2_major" ]; then
+              echo "$c to $n is a major change" >> $GITHUB_STEP_SUMMARY
+              change_level=major
+            elif [ "$v1_minor" -ne "$v2_minor" ]; then
+              echo "$c to $n is a minor change" >> $GITHUB_STEP_SUMMARY
+              change_level=minor
+            elif [ "$v1_patch" -ne "$v2_patch" ]; then
+              echo "$c to $n is a patch change" >> $GITHUB_STEP_SUMMARY
+              change_level=patch
+            else
+              echo "this shouldn't happen... but no-oping" >> $GITHUB_STEP_SUMMARY
+              diff=false
+            fi
+          fi
+
+          echo "diff=$diff" | tee -a $GITHUB_OUTPUT
+          echo "change_level=$change_level" | tee -a $GITHUB_OUTPUT
+          set -e
+        shell: bash
+
+      - name: Make changes and create pull request
+        if: steps.comp.outputs.diff == 'true'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          current_version: ${{ steps.current.outputs.version }}
+          new_version: ${{ steps.latest.outputs.version }}
+          branch_name: ${{ matrix.chart_name }}/${{ steps.latest.outputs.version }}
+        run: |
+          git checkout -b $branch_name
+
+          # bump image tag in values.yaml
+          echo "[INFO] bumping image.tag from $current_version to $new_version in ${{ matrix.chart_name }}/values.yaml"
+          yq -i ".image.tag = \"$new_version\"" charts/${{ matrix.chart_name }}/values.yaml
+
+          # bump app version in Chart.yaml
+          echo "[INFO] bumping appVersion from $current_version to $new_version in ${{ matrix.chart_name }}/Chart.yaml"
+          yq -i ".appVersion = \"$new_version\"" charts/${{ matrix.chart_name }}/Chart.yaml
+
+          # bump chart version in Chart.yaml
+          current_chart_version=$(yq '.version' charts/${{ matrix.chart_name }}/Chart.yaml)
+          [ -z $current_chart_version ] && echo "[ERROR] could not find current_chart_version" && exit 1
+          new_chart_version=$(semver -i ${{ steps.comp.outputs.change_level }} $current_chart_version)
+          [ -z $new_chart_version ] && echo "[ERROR] could not increment current_chart_version: " && semver -i ${{ steps.comp.outputs.change_level }} $current_chart_version && exit 1
+          echo "[INFO] bumping version from $current_chart_version to $new_chart_version in ${{ matrix.chart_name }}/Chart.yaml (change level was ${{ steps.comp.outputs.change_level }})"
+          yq -i ".version = \"$new_chart_version\"" charts/${{ matrix.chart_name }}/Chart.yaml
+
+          # commit and push changes, and create a PR
+          git config --global user.email "rnodec@pm.me"
+          git config --global user.name "rnodec"
+          git status
+          git commit -a -m "${{ steps.comp.outputs.change_level }}: bump ${{ matrix.chart_name }} to $new_version"
+          git push -u origin $branch_name
+
+          gh pr create \
+            -B main \
+            -H $branch_name \
+            --title "Bump ${{ matrix.chart_name }} from $current_version to $new_version" \
+            --body 'Created by Github actions - auto-updater'
+          url=$(gh pr view -q .url --json url)
+          echo "Creating pr: $url" >> $GITHUB_STEP_SUMMARY
         shell: bash
