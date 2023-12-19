@@ -1,7 +1,7 @@
 ---
 image:
   repository: ethereum/client-go
-  tag: v1.13.5
+  tag: v1.13.7
 storage:
   storageClassName: local
   pvcSize: 1200Gi
@@ -15,12 +15,12 @@ resources:
   requests:
     cpu: 4
     memory: 16Gi
-  # limits:
-  #   cpu: 4
-  #   memory: 24Gi
-  # requests:
-  #   cpu: 2
-  #   memory: 16Gi
+    # limits:
+    #   cpu: 4
+    #   memory: 24Gi
+    # requests:
+    #   cpu: 2
+    #   memory: 16Gi
 geth:
   network: mainnet
   p2p:
