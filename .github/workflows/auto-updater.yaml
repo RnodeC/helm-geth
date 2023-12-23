@@ -4,7 +4,7 @@ name: Auto Updater
 on:
   workflow_dispatch:
   schedule:
-    - cron: '* 16 * * 2'  # 4:00pm utc daily
+    - cron: '0 16 * * *'  # 4:00pm utc daily
 
 
 jobs:
