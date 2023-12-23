@@ -1,0 +1,46 @@
+---
+image:
+  repository: ethereum/client-go
+  tag: v1.13.5
+storage:
+  storageClassName: local
+  pvcSize: 1200Gi
+replicas: 1
+resources:
+  # These default resources are for testing purposes
+  # If you actually want to run a node, use the more realistic values which are commented out.
+  limits:
+    cpu: 8
+    memory: 24Gi
+  requests:
+    cpu: 4
+    memory: 16Gi
+  # limits:
+  #   cpu: 4
+  #   memory: 24Gi
+  # requests:
+  #   cpu: 2
+  #   memory: 16Gi
+geth:
+  network: mainnet
+  p2p:
+    hostPorts: false
+    tcpPort: 30303
+    udpPort: 30303
+  rpc:
+    enabled: true
+    port: 8551
+    listenAddress: 0.0.0.0
+  metrics:
+    enabled: false
+    port: 6060
+  http:
+    enabled: true
+    port: 8545
+    listenAddress: 0.0.0.0
+  # this is the auth token for consensus clients
+  # generate this value with: 'openssl rand -hex 32 | tr -d "\n"'
+  # if no jwt provided, geth will auto-generate a secret under /chaindata/geth/jwtsecret
+  # if you do provide the jwt, do not include the leading "0x"
+  # jwt:
+  ipcDisable: true

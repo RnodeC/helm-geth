@@ -1,0 +1,133 @@
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: berachain
+  labels:
+{{ include "berachain.labels" . | indent 4 }}
+spec:
+  replicas: {{ .Values.replicas }}
+  serviceName: berachain
+  selector:
+    matchLabels:
+{{ include "berachain.labels" . | indent 6 }}
+  template:
+    metadata:
+      labels:
+{{ include "berachain.labels" . | indent 8 }}
+    spec:
+      serviceAccountName: {{ include "berachain.serviceAccountName" . }}
+      containers:
+      - name: berachain
+        image: {{ include "berachain.image" . }}
+        command:
+        - berachain
+        args:
+        {{- with .Values.berachain }}
+        - --{{ .network }}
+        - --datadir=/chaindata
+        - --discovery.port={{ .p2p.udpPort }}
+        - --port={{ .p2p.tcpPort }}
+        - --state.scheme=path
+        {{- if .rpc.enabled }}
+        - --authrpc.addr={{ .rpc.listenAddress }}
+        - --authrpc.port={{ .rpc.port }}
+        - --authrpc.vhosts=*
+        - --authrpc.jwtsecret=/etc/eth2/jwt
+        {{- end }}
+        {{- if .http.enabled }}
+        - --http
+        - --http.addr={{ .http.listenAddress }}
+        - --http.port={{ .http.port }}
+        - --http.vhosts=*
+        {{- end }}
+        {{- if .metrics.enabled }}
+        - --metrics
+        - --metrics.addr=0.0.0.0
+        - --metrics.port={{ .metrics.port }}
+        {{- end }}
+        {{- if .ipcDisable }}
+        - --ipcdisable
+        {{- end }}
+        imagePullPolicy: IfNotPresent
+        ports:
+          - name: tcppeer
+            containerPort: {{ .p2p.tcpPort }}
+            protocol: TCP
+            {{- if .p2p.hostPorts }}
+            hostPort: {{ .p2p.tcpPort }}
+            {{- end }}
+          - name: udppeer
+            containerPort: {{ .p2p.udpPort }}
+            protocol: UDP
+            {{- if .p2p.hostPorts }}
+            hostPort: {{ .p2p.udpPort }}
+            {{- end }}
+          {{- if .rpc.enabled }}
+          - name: rpc
+            containerPort: {{ .rpc.port }}
+            protocol: TCP
+          {{- end }}
+          {{- if .http.enabled }}
+          - name: http
+            containerPort: {{ .http.port }}
+            protocol: TCP
+          {{- end }}
+          {{- if .metrics.enabled }}
+          - name: metrics
+            containerPort: {{ .metrics.port }}
+            protol: TCP
+          {{- end }}
+        {{- end }}
+        livenessProbe:
+          initialDelaySeconds: 60
+          periodSeconds: 120
+          tcpSocket:
+            port: tcppeer
+        readinessProbe:
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          tcpSocket:
+            port: tcppeer
+        startupProbe:
+          initialDelaySeconds: 120
+          tcpSocket:
+            port: tcppeer
+        resources:
+          {{- toYaml .Values.resources | nindent 10 }}
+        securityContext:
+          privileged: false
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+        volumeMounts:
+        - name: chaindata
+          mountPath: /chaindata
+        - name: jwt
+          mountPath: /etc/eth2
+      enableServiceLinks: false
+      terminationGracePeriodSeconds: 300
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 1000
+        readOnlyRootFilesystem: 'true'
+      volumes:
+       - name: jwt
+         secret:
+           secretName: berachain-jwt
+  volumeClaimTemplates:
+  - apiVersion: v1
+    metadata:
+      name: chaindata
+      labels:
+{{ include "berachain.labels" . | indent 8 }}
+    spec:
+      storageClassName: {{ .Values.storage.storageClassName }}
+      accessModes: ["ReadWriteOnce"]
+      resources:
+        requests:
+          storage: {{ .Values.storage.pvcSize }}
