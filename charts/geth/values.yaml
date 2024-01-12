@@ -1,7 +1,7 @@
 ---
 image:
   repository: ethereum/client-go
-  tag: v1.13.8
+  tag: v1.13.10
 storage:
   storageClassName: local
   pvcSize: 1200Gi
