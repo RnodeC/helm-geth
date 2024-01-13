@@ -1,0 +1,33 @@
+{{- if .Values.geth.ingress.http.enabled }}
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: geth-http
+  labels:
+{{ include "geth.labels" . | indent 4 }}
+  {{- with .Values.geth.ingress.http.annotations }}
+  annotations:
+{{ toYaml . | indent 4 }}
+  {{- end }}
+spec:
+  {{- with .Values.geth.ingress.http.tls }}
+  tls:
+{{ toYaml . | indent 4 }}
+  {{- end }}
+  rules:
+    {{- range .Values.geth.ingress.http.hosts }}
+    - host: {{ .host }}
+      http:
+        paths:
+          {{- range .paths }}
+          - path: {{ .path }}
+            pathType: {{ .pathType }}
+            backend:
+              service:
+                name: geth
+                port:
+                  name: http
+          {{- end }}
+    {{- end }}
+{{- end }}

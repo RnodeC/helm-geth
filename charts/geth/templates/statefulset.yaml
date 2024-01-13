@@ -30,14 +30,14 @@ spec:
         - --port={{ .p2p.tcpPort }}
         - --state.scheme=path
         {{- if .rpc.enabled }}
-        - --authrpc.addr={{ .rpc.listenAddress }}
+        - --authrpc.addr=0.0.0.0
         - --authrpc.port={{ .rpc.port }}
         - --authrpc.vhosts=*
         - --authrpc.jwtsecret=/etc/eth2/jwt
         {{- end }}
         {{- if .http.enabled }}
         - --http
-        - --http.addr={{ .http.listenAddress }}
+        - --http.addr=0.0.0.0
         - --http.port={{ .http.port }}
         - --http.vhosts=*
         {{- end }}

@@ -30,14 +30,32 @@ geth:
   rpc:
     enabled: true
     port: 8551
-    listenAddress: 0.0.0.0
   metrics:
     enabled: false
     port: 6060
   http:
     enabled: true
     port: 8545
-    listenAddress: 0.0.0.0
+  ingress:
+    http:
+      enabled: false
+      annotations: {}
+      hosts:
+        - host: http-geth.example.com
+          paths:
+            - path: /
+              pathType: ImplementationSpecific
+      tls: []
+    rpc:
+      enabled: false
+      annotations: {}
+      hosts:
+        - host: rpc-geth.example.com
+          paths:
+            - path: /
+              pathType: ImplementationSpecific
+      tls: []
+
   # this is the auth token for consensus clients
   # generate this value with: 'openssl rand -hex 32 | tr -d "\n"'
   # if no jwt provided, geth will auto-generate a secret under /chaindata/geth/jwtsecret
