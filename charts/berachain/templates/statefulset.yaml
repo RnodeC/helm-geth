@@ -2,12 +2,12 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: berachain
+  name: berad
   labels:
 {{ include "berachain.labels" . | indent 4 }}
 spec:
   replicas: {{ .Values.replicas }}
-  serviceName: berachain
+  serviceName: berad
   selector:
     matchLabels:
 {{ include "berachain.labels" . | indent 6 }}
@@ -18,81 +18,49 @@ spec:
     spec:
       serviceAccountName: {{ include "berachain.serviceAccountName" . }}
       containers:
-      - name: berachain
+      - name: berad
         image: {{ include "berachain.image" . }}
-        command:
-        - berachain
-        args:
         {{- with .Values.berachain }}
-        - --{{ .network }}
-        - --datadir=/chaindata
-        - --discovery.port={{ .p2p.udpPort }}
-        - --port={{ .p2p.tcpPort }}
-        - --state.scheme=path
-        {{- if .rpc.enabled }}
-        - --authrpc.addr={{ .rpc.listenAddress }}
-        - --authrpc.port={{ .rpc.port }}
-        - --authrpc.vhosts=*
-        - --authrpc.jwtsecret=/etc/eth2/jwt
-        {{- end }}
-        {{- if .http.enabled }}
-        - --http
-        - --http.addr={{ .http.listenAddress }}
-        - --http.port={{ .http.port }}
-        - --http.vhosts=*
-        {{- end }}
-        {{- if .metrics.enabled }}
-        - --metrics
-        - --metrics.addr=0.0.0.0
-        - --metrics.port={{ .metrics.port }}
-        {{- end }}
-        {{- if .ipcDisable }}
-        - --ipcdisable
-        {{- end }}
+        command:
+        - berad
+        args:
+        - start
+        - --home=/home/bera/.berad
         imagePullPolicy: IfNotPresent
         ports:
-          - name: tcppeer
+          - name: p2p
             containerPort: {{ .p2p.tcpPort }}
             protocol: TCP
-            {{- if .p2p.hostPorts }}
-            hostPort: {{ .p2p.tcpPort }}
-            {{- end }}
-          - name: udppeer
-            containerPort: {{ .p2p.udpPort }}
-            protocol: UDP
-            {{- if .p2p.hostPorts }}
-            hostPort: {{ .p2p.udpPort }}
-            {{- end }}
           {{- if .rpc.enabled }}
           - name: rpc
-            containerPort: {{ .rpc.port }}
+            containerPort: 26657
             protocol: TCP
           {{- end }}
-          {{- if .http.enabled }}
-          - name: http
-            containerPort: {{ .http.port }}
+          {{- if .api.enabled }}
+          - name: api
+            containerPort: 1317
             protocol: TCP
           {{- end }}
-          {{- if .metrics.enabled }}
-          - name: metrics
-            containerPort: {{ .metrics.port }}
-            protol: TCP
+          {{- if .grpc.enabled }}
+          - name: grpc
+            containerPort: 9090
+            protocol: TCP
           {{- end }}
         {{- end }}
         livenessProbe:
           initialDelaySeconds: 60
           periodSeconds: 120
           tcpSocket:
-            port: tcppeer
+            port: p2p
         readinessProbe:
           initialDelaySeconds: 10
           periodSeconds: 10
           tcpSocket:
-            port: tcppeer
+            port: p2p
         startupProbe:
           initialDelaySeconds: 120
           tcpSocket:
-            port: tcppeer
+            port: p2p
         resources:
           {{- toYaml .Values.resources | nindent 10 }}
         securityContext:
@@ -103,9 +71,13 @@ spec:
             - ALL
         volumeMounts:
         - name: chaindata
-          mountPath: /chaindata
-        - name: jwt
-          mountPath: /etc/eth2
+          mountPath: /home/bera/.berad/data
+        - name: app-config
+          mountPath: /home/bera/.berad/config/app.toml
+          subPath: app.toml
+        - name: config-config
+          mountPath: /home/bera/.berad/config/config.toml
+          subPath: config.toml
       enableServiceLinks: false
       terminationGracePeriodSeconds: 300
       securityContext:
@@ -116,9 +88,12 @@ spec:
         fsGroup: 1000
         readOnlyRootFilesystem: 'true'
       volumes:
-       - name: jwt
-         secret:
-           secretName: berachain-jwt
+      - name: app-config
+        configMap:
+          name: berad-app-config
+      - name: config-config
+        configMap:
+          name: berad-config-config
   volumeClaimTemplates:
   - apiVersion: v1
     metadata:

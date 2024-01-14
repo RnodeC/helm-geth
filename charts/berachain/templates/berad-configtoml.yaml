@@ -1,0 +1,136 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: berad-configtoml
+  labels:
+{{ include "berachain.labels" . | indent 4 }}
+data:
+  {{- with .Values.berachain }}
+  config.toml: |
+    # This is a TOML config file.
+    # For more information, see https://github.com/toml-lang/toml
+
+    version = "0.38.0"
+
+    #######################################################################
+    ###                   Main Base Config Options                      ###
+    #######################################################################
+
+    proxy_app = "tcp://127.0.0.1:26658"
+    moniker = "{{ .moniker }}"
+    db_backend = "{{ .dbBackend }}"
+    db_dir = "data"
+    log_level = "info"
+    log_format = "plain"
+    genesis_file = "config/genesis.json"
+    priv_validator_key_file = "config/priv_validator_key.json"
+    priv_validator_state_file = "data/priv_validator_state.json"
+    priv_validator_laddr = ""
+    node_key_file = "config/node_key.json"
+    abci = "socket"
+    filter_peers = false
+
+    #######################################################################
+    ###                 Advanced Configuration Options                  ###
+    #######################################################################
+
+    [rpc]
+    laddr = "tcp://0.0.0.0:26657"
+    cors_allowed_methods = ["HEAD", "GET", "POST"]
+    cors_allowed_headers = ["Origin", "Accept", "Content-Type", "X-Requested-With", "X-Server-Time"]
+    grpc_laddr = ""
+    grpc_max_open_connections = 900
+    unsafe = false
+    max_open_connections = 900
+    max_subscription_clients = 100
+    max_subscriptions_per_client = 5
+    experimental_subscription_buffer_size = 200
+    experimental_websocket_write_buffer_size = 200
+    experimental_close_on_slow_client = false
+    timeout_broadcast_tx_commit = "10s"
+    max_body_bytes = 1000000
+    max_header_bytes = 1048576
+    tls_cert_file = ""
+    tls_key_file = ""
+    pprof_laddr = "0.0.0.0:6060"
+
+    [p2p]
+    laddr = "tcp://0.0.0.0:{{ .p2p.tcpPort }}"
+    {{- if .p2p.externalAddress }}
+    external_address = "tcp://{{ .p2p.externalAddress }}:{{ .p2p.port }}"
+    {{- else }}
+    external_address = ""
+    {{- end }}
+    seeds = "{{ .seeds }}"
+    persistent_peers = "{{ .persistentPeers }}"
+    addr_book_file = "config/addrbook.json"
+    addr_book_strict = true
+    max_num_inbound_peers = {{ .maxInboundPeers }}
+    max_num_outbound_peers = {{ .maxOutboundPeers }}
+    unconditional_peer_ids = ""
+    persistent_peers_max_dial_period = "0s"
+    flush_throttle_timeout = "100ms"
+    max_packet_msg_payload_size = 1024
+    send_rate = 5120000
+    recv_rate = 5120000
+    pex = {{ .pexEnabled | toYaml }}
+    seed_mode = {{ .seedModeEnabled | toYaml }}
+    private_peer_ids = "{{ .privatePeerIds }}"
+    allow_duplicate_ip = false
+    handshake_timeout = "20s"
+    dial_timeout = "3s"
+
+    [mempool]
+    recheck = true
+    broadcast = true
+    wal_dir = ""
+    size = 5000
+    max_txs_bytes = 1073741824
+    cache_size = 10000
+    keep_invalid_txs_in_cache = false
+    max_tx_bytes = 1048576
+
+    [statesync]
+    enable = {{ .stateSyncEnabled | toYaml }}
+    rpc_servers = "{{ .stateSyncRpcServers }}"
+    trust_height = 0
+    trust_hash = ""
+    trust_period = "168h0m0s"
+    discovery_time = "15s"
+    temp_dir = ""
+    chunk_request_timeout = "10s"
+    chunk_fetchers = "4"
+
+    [blocksync]
+    version = "v0"
+
+    [consensus]
+    wal_file = "data/cs.wal/wal"
+    timeout_propose = "1s"
+    timeout_propose_delta = "1s"
+    timeout_prevote = "1s"
+    timeout_prevote_delta = "1s"
+    timeout_precommit = "1s"
+    timeout_precommit_delta = "1s"
+    timeout_commit = "5s"
+    double_sign_check_height = 0
+    skip_timeout_commit = false
+    create_empty_blocks = true
+    create_empty_blocks_interval = "0s"
+    peer_gossip_sleep_duration = "100ms"
+    peer_query_maj23_sleep_duration = "2s"
+
+    [storage]
+    discard_abci_responses = false
+
+    [tx_index]
+    indexer = "kv"
+    psql-conn = ""
+
+    [instrumentation]
+    prometheus = {{ .prometheus.enabled | toYaml }}
+    prometheus_listen_addr = ":26660"
+    max_open_connections = 3
+    namespace = "cometbft"
+
+  {{- end }}

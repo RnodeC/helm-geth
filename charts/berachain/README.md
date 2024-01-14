@@ -6,3 +6,11 @@ helm repo update rnodec
 helm upgrade --install berachain rnodec/berachain --namespace berachain --create-namespace
 ```
 Review `values.yaml` for full config options.
+
+## Required vars
+
+```
+berachain:
+  moniker: <unique name for your node>
+  
+```

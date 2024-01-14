@@ -1,46 +1,56 @@
----
 image:
-  repository: ethereum/client-go
-  tag: v1.13.5
+  repository: berachain
+  tag: notreal
+
 storage:
   storageClassName: local
   pvcSize: 1200Gi
+
 replicas: 1
+
 resources:
-  # These default resources are for testing purposes
-  # If you actually want to run a node, use the more realistic values which are commented out.
   limits:
     cpu: 8
-    memory: 24Gi
+    memory: 64Gi
   requests:
     cpu: 4
-    memory: 16Gi
-  # limits:
-  #   cpu: 4
-  #   memory: 24Gi
-  # requests:
-  #   cpu: 2
-  #   memory: 16Gi
-geth:
-  network: mainnet
+    memory: 64Gi
+
+berachain:
+  role: full
+  chainId: ''
+  genesisUrl: ''
+  binUrl: ''
+  keyringBackend: file
+  pruningMode: default
+  seeds: ''
+  minGasPrices: '0b/0x5806E416dA447b267cEA759358cF22Cc41FAE80F'
+  dbBackend: goleveldb
+  persistentPeers: ''
+  privatePeerIds: ''
+  pexEnabled: true
+  telemetry:
+    enabled: false
+    dogstatsdAddr: ''
+  prometheus:
+    enabled: true
   p2p:
     hostPorts: false
-    tcpPort: 30303
-    udpPort: 30303
+    tcpPort: 26656
+    udpPort: 26656
+    externalAddress: ''
+    seedModeEnabled: false
+    stateSyncEnabled: false
+    stateSyncRpcServers: ''
+  grpc:
+    enabled: true
   rpc:
-    enabled: true
-    port: 8551
-    listenAddress: 0.0.0.0
-  metrics:
+    corsAllowedOrigins: '[]'
+    maxInboundPeers: 40
+    maxOutboundPeers: 10
+  api:
     enabled: false
-    port: 6060
-  http:
-    enabled: true
-    port: 8545
-    listenAddress: 0.0.0.0
-  # this is the auth token for consensus clients
-  # generate this value with: 'openssl rand -hex 32 | tr -d "\n"'
-  # if no jwt provided, geth will auto-generate a secret under /chaindata/geth/jwtsecret
-  # if you do provide the jwt, do not include the leading "0x"
-  # jwt:
-  ipcDisable: true
+    unsafeCorsEnabled: false
+
+  polaris:
+    chainId: '1'

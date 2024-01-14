@@ -1,4 +1,4 @@
-{{- if .Values.berachain.metrics.enabled -}}
+{{- if .Values.berachain.prometheus.enabled -}}
 ---
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor

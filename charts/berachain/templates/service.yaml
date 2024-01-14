@@ -8,12 +8,6 @@ metadata:
 spec:
   type: ClusterIP
   ports:
-    {{- if .Values.berachain.rpc.enabled }}
-    - port: {{ .Values.berachain.rpc.port }}
-      targetPort: rpc
-      protocol: TCP
-      name: rpc
-    {{- end }}
     {{- if not .Values.berachain.p2p.hostPorts }}
     - port: {{ .Values.berachain.p2p.tcpPort }}
       targetPort: tcppeer
@@ -24,18 +18,29 @@ spec:
       protocol: UDP
       name: udppeer
     {{- end }}
-    {{- if .Values.berachain.http.enabled }}
-    - port: {{ .Values.berachain.http.port }}
-      targetPort: http
+    {{- if .Values.berachain.rpc.enabled }}
+    - port: 26657
+      targetPort: rpc
       protocol: TCP
-      name: http
+      name: rpc
     {{- end }}
-    {{- if .Values.berachain.metrics.enabled }}
-    - port: {{ .Values.berachain.metrics.port }}
-      targetPort: metrics
+    {{- if .Values.berachain.api.enabled }}
+    - port: 1317
+      targetPort: api
       protocol: TCP
-      name: metrics
+      name: api
+    {{- end }}
+    {{- if .Values.berachain.grpc.enabled }}
+    - port: 9090
+      targetPort: grpc
+      protocol: TCP
+      name: grpc
+    {{- end }}
+    {{- if .Values.berachain.prometheus.enabled }}
+    - port: 26660
+      targetPort: prometheus
+      protocol: TCP
+      name: prometheus
     {{- end }}
   selector:
 {{ include "berachain.labels" . | indent 4 }}
-
