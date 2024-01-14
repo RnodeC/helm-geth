@@ -1,0 +1,33 @@
+{{- if .Values.geth.ingress.rpc.enabled }}
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: geth-rpc
+  labels:
+{{ include "geth.labels" . | indent 4 }}
+  {{- with .Values.geth.ingress.rpc.annotations }}
+  annotations:
+{{ toYaml . | indent 4 }}
+  {{- end }}
+spec:
+  {{- with .Values.geth.ingress.rpc.tls }}
+  tls:
+{{ toYaml . | indent 4 }}
+  {{- end }}
+  rules:
+    {{- range .Values.geth.ingress.rpc.hosts }}
+    - host: {{ .host }}
+      http:
+        paths:
+          {{- range .paths }}
+          - path: {{ .path }}
+            pathType: {{ .pathType }}
+            backend:
+              service:
+                name: geth
+                port:
+                  name: rpc
+          {{- end }}
+    {{- end }}
+{{- end }}
