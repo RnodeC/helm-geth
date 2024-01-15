@@ -139,7 +139,7 @@ data:
     [polaris.polar.miner]
     etherbase = "0xAf15f95bed0D3913a29092Fd7837451Ce4de64D3"
     extra-data = "0x"
-    gas-price = "1000000000"
+    gas-price = 1
     gas-floor = "0"
     gas-ceil = "30000000"
     recommit = "2s"
@@ -159,13 +159,13 @@ data:
     no-locals = false
     journal = ""
     rejournal = "1h0m0s"
-    price-limit = "1"
+    price-limit = 10000000000000
     price-bump = "10"
     account-slots = "16"
     account-queue = "64"
     global-slots = "5120"
     global-queue = "1024"
-    lifetime="5m"
+    lifetime = 5m0s
 
     [polaris.node]
     name = "polaris-geth"

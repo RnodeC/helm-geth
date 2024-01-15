@@ -84,11 +84,11 @@ data:
     recheck = true
     broadcast = true
     wal_dir = ""
-    size = 5000
     max_txs_bytes = 1073741824
-    cache_size = 10000
-    keep_invalid_txs_in_cache = false
     max_tx_bytes = 1048576
+    size = 250
+    cache_size = 500000
+    keep-invalid-txs-in-cache = true
 
     [statesync]
     enable = {{ .stateSyncEnabled | toYaml }}

@@ -46,8 +46,8 @@ berachain:
     enabled: true
   rpc:
     corsAllowedOrigins: '[]'
-    maxInboundPeers: 40
-    maxOutboundPeers: 10
+    maxInboundPeers: 10
+    maxOutboundPeers: 15
   api:
     enabled: false
     unsafeCorsEnabled: false
