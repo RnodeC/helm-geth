@@ -165,7 +165,7 @@ data:
     account-queue = "64"
     global-slots = "5120"
     global-queue = "1024"
-    lifetime = "3h0m0s"
+    lifetime="5m"
 
     [polaris.node]
     name = "polaris-geth"
