@@ -156,7 +156,7 @@ data:
 
     [polaris.polar.legacy-tx-pool]
     locals = []
-    no-locals = false
+    no-locals = true
     journal = ""
     rejournal = "1h0m0s"
     price-limit = 10000000000000
