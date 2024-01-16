@@ -86,8 +86,8 @@ data:
     wal_dir = ""
     max_txs_bytes = 1073741824
     max_tx_bytes = 1048576
-    size = 250
-    cache_size = 500000
+    size = 10000
+    cache_size = 250000
     keep-invalid-txs-in-cache = true
 
     [statesync]

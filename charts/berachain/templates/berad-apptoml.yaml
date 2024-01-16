@@ -109,7 +109,8 @@ data:
     rpc-gas-cap = "50000000"
     rpc-evm-timeout = "5s"
     rpc-tx-fee-cap = "1"
-
+    force-tx-removal = false
+    
     [polaris.polar.chain]
     chain-id = "{{ .polaris.chainId }}"
     homestead-block = "0"
@@ -139,7 +140,7 @@ data:
     [polaris.polar.miner]
     etherbase = "0xAf15f95bed0D3913a29092Fd7837451Ce4de64D3"
     extra-data = "0x"
-    gas-price = 1
+    gas-price = "1"
     gas-floor = "0"
     gas-ceil = "30000000"
     recommit = "2s"
@@ -159,7 +160,7 @@ data:
     no-locals = true
     journal = ""
     rejournal = "1h0m0s"
-    price-limit = 10000000000000
+    price-limit = "100000000"
     price-bump = "10"
     account-slots = "16"
     account-queue = "64"
@@ -183,8 +184,8 @@ data:
     http-port = 9545
     http-cors = ["*"]
     http-virtual-hosts = ["*"]
-    http-modules = ["net", "web3", "eth", "web3", "net", "txpool", "debug"]
-    http-path-prefix = ""
+    http-modules = ["net", "web3", "eth", "web3"]
+    # http-modules = ["net", "web3", "eth", "web3", "txpool", "debug"]    http-path-prefix = ""
     auth-addr = "localhost"
     auth-port = 8551
     auth-virtual-hosts = ["localhost"]
