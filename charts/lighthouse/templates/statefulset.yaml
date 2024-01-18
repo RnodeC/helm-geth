@@ -33,6 +33,10 @@ spec:
               namespaces:
               - geth
               topologyKey: kubernetes.io/hostname
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       containers:
       {{- if $bn }}
       - name: lighthouse-bn
