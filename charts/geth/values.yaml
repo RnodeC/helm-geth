@@ -2,10 +2,17 @@
 image:
   repository: ethereum/client-go
   tag: v1.13.10
+
 storage:
   storageClassName: local
   pvcSize: 1200Gi
+
+# nodeSelector is optional. Uncomment to use.
+# nodeSelector:
+#   key: value
+
 replicas: 1
+
 resources:
   # These default resources are for testing purposes
   # If you actually want to run a node, use the more realistic values which are commented out.

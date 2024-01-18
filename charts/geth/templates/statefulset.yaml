@@ -17,6 +17,10 @@ spec:
 {{ include "geth.labels" . | indent 8 }}
     spec:
       serviceAccountName: {{ include "geth.serviceAccountName" . }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       containers:
       - name: geth
         image: {{ include "geth.image" . }}
