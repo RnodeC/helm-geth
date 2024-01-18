@@ -6,6 +6,10 @@ storage:
   storageClassName: local
   pvcSize: 1200Gi
 
+# nodeSelector is optional. Uncomment to use.
+# nodeSelector:
+#   key: value
+
 replicas: 1
 
 resources:

@@ -17,6 +17,10 @@ spec:
 {{ include "berachain.labels" . | indent 8 }}
     spec:
       serviceAccountName: {{ include "berachain.serviceAccountName" . }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       containers:
       - name: berad
         image: {{ include "berachain.image" . }}
