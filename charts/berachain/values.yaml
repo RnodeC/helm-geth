@@ -54,3 +54,5 @@ berachain:
 
   polaris:
     chainId: '1'
+    optimisticExecution: false
+    etherbase: '0xAf15f95bed0D3913a29092Fd7837451Ce4de64D3'
