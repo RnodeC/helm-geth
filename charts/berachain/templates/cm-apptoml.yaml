@@ -1,0 +1,262 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: apptoml
+  labels:
+{{ include "berachain.labels" . | indent 4 }}
+data:
+  {{- with .Values.berachain }}
+  app.toml: |
+    # This is a TOML config file.
+    # For more information, see https://github.com/toml-lang/toml
+
+    ###############################################################################
+    ###                           Base Configuration                            ###
+    ###############################################################################
+
+    minimum-gas-prices = "{{ .minGasPrices }}"
+    query-gas-limit = "0"
+    pruning = {{ .pruningMode }}"
+    pruning-keep-recent = "0"
+    pruning-interval = "0"
+    halt-height = 0
+    halt-time = 0
+    min-retain-blocks = 0
+    inter-block-cache = true
+    index-events = []
+    iavl-cache-size = 10000
+    iavl-disable-fastnode = false
+    app-db-backend = ""
+
+    ###############################################################################
+    ###                         Telemetry Configuration                         ###
+    ###############################################################################
+
+    [telemetry]
+    service-name = "{{ .moniker }}"
+    enabled = {{ .telemetry.enabled | toYaml }}
+    enable-hostname = true
+    enable-hostname-label = true
+    enable-service-label = true
+    prometheus-retention-time = 0
+    global-labels = []
+    metrics-sink = "dogstatsd"
+    statsd-addr = "{{ .dogstatsdAddr }}"
+    datadog-hostname = "{{ .moniker }}"
+
+    ###############################################################################
+    ###                           API Configuration                             ###
+    ###############################################################################
+
+    [api]
+    enable = {{ .api.enabled | toYaml }}
+    swagger = {{ .api.enabled | toYaml }}
+    address = "tcp://0.0.0.0:1317"
+    max-open-connections = 1000
+    rpc-read-timeout = 10
+    rpc-write-timeout = 0
+    rpc-max-body-bytes = 1000000
+    enabled-unsafe-cors = {{ .api.unsafeCorsEnabled | toYaml }}
+
+    ###############################################################################
+    ###                           gRPC Configuration                            ###
+    ###############################################################################
+
+    [grpc]
+    enable = {{ .grpc.enabled | toYaml }}
+    address = "0.0.0.0:9090"
+    max-recv-msg-size = "10485760"
+    max-send-msg-size = "2147483647"
+
+    ###############################################################################
+    ###                        gRPC Web Configuration                           ###
+    ###############################################################################
+
+    [grpc-web]
+    enable = {{ .grpc.enabled | toYaml }}
+
+    ###############################################################################
+    ###                        State Sync Configuration                         ###
+    ###############################################################################
+
+    [state-sync]
+    snapshot-interval = 0
+    snapshot-keep-recent = 2
+
+    ###############################################################################
+    ###                              State Streaming                            ###
+    ###############################################################################
+
+    [streaming]
+    [streaming.abci]
+    keys = []
+    plugin = ""
+    stop-node-on-err = true
+
+    ###############################################################################
+    ###                         Mempool                                         ###
+    ###############################################################################
+
+    [mempool]
+    max-txs = 5000
+
+    ###############################################################################
+    ###                                 Polaris                                 ###
+    ###############################################################################
+
+    [polaris]
+    optimistic-execution = {{ .polaris.optimisticExecution }}
+    [polaris.polar]
+    rpc-gas-cap = "50000000"
+    rpc-evm-timeout = "5s"
+    rpc-tx-fee-cap = "1"
+    force-tx-removal = false
+
+    [polaris.polar.chain]
+    chain-id = "{{ .polaris.chainId }}"
+    homestead-block = "0"
+    dao-fork-block = "0"
+    dao-fork-support = true
+    eip150-block = "0"
+    eip155-block = "0"
+    eip158-block = "0"
+    byzantium-block = "0"
+    constantinople-block = "0"
+    petersburg-block = "0"
+    istanbul-block = "0"
+    muir-glacier-block = "0"
+    berlin-block = "0"
+    london-block = "0"
+    arrow-glacier-block = "0"
+    gray-glacier-block = "0"
+    merge-netsplit-block = "0"
+    shanghai-time = "0"
+    cancun-time = "<nil>"
+    prague-time = "<nil>"
+    verkle-time = "<nil>"
+    terminal-total-difficulty = "0"
+    terminal-total-difficulty-passed = "true"
+    is-dev-mode = false
+
+    [polaris.polar.miner]
+    etherbase = "{{ .polaris.etherBase }}"
+    extra-data = "0x"
+    gas-price = "1"
+    gas-floor = "0"
+    gas-ceil = "30000000"
+    recommit = "2s"
+    new-payload-timeout = "2s"
+
+    [polaris.polar.gpo]
+    blocks = "20"
+    percentile = "60"
+    max-header-history = "1024"
+    max-block-history = "1024"
+    default = "1000000000"
+    max-price = "10000000000000"
+    ignore-price = "2"
+
+    [polaris.polar.legacy-tx-pool]
+    locals = []
+    no-locals = true
+    journal = ""
+    rejournal = "1h0m0s"
+    price-limit = "100000000"
+    price-bump = "10"
+    account-slots = "16"
+    account-queue = "64"
+    global-slots = "5120"
+    global-queue = "1024"
+    lifetime = 5m0s
+
+    [polaris.node]
+    name = "polaris-geth"
+    user-ident = ""
+    version = ""
+    data-dir = ""
+    key-store-dir = ""
+    external-signer = ""
+    use-lightweight-kdf = false
+    insecure-unlock-allowed = false
+    usb = false
+    smart-card-daemon-path = ""
+    ipc-path = ""
+    http-host = "0.0.0.0"
+    http-port = 9545
+    http-cors = ["*"]
+    http-virtual-hosts = ["*"]
+    http-modules = ["net", "web3", "eth", "web3"]
+    # http-modules = ["net", "web3", "eth", "web3", "txpool", "debug"]
+    http-path-prefix = ""
+    auth-addr = "localhost"
+    auth-port = 8551
+    auth-virtual-hosts = ["localhost"]
+    ws-host = "0.0.0.0"
+    ws-port = 8546
+    ws-path-prefix = ""
+    ws-origins = ["*"]
+    ws-modules = ["net", "web3", "eth"]
+    ws-expose-all = false
+    graphql-cors = []
+    graphql-virtual-hosts = ["localhost"]
+    allow-unprotected-txs = false
+    batch-request-limit = 1000
+    batch-response-max-size = 25000000
+    jwt-secret = ""
+    db-engine = ""
+
+    [polaris.node.http-timeouts]
+    read-timeout = "30s"
+    read-header-timeout = "30s"
+    write-timeout = "30s"
+    idle-timeout = "2m0s"
+
+    ###############################################################################
+    ###                                  Oracle                                 ###
+    ###############################################################################
+
+    [oracle]
+    vote_extensions_enabled = true
+    update_interval = "4s"
+    timeout = "750ms"
+    in_process = true
+    remote_address = "localhost:8080"
+
+    [[oracle.providers]]
+    name = "okx"
+    apikey = ""
+    provider_timeout = "0s"
+
+    [[oracle.providers.token_name_to_metadata]]
+
+    [[oracle.currency_pairs]]
+    base = "BTC"
+    quote = "USDC"
+
+    [[oracle.currency_pairs]]
+    base = "ATOM"
+    quote = "USDT"
+
+    [[oracle.currency_pairs]]
+    base = "TIA"
+    quote = "USDT"
+
+    [[oracle.currency_pairs]]
+    base = "ETH"
+    quote = "USDC"
+
+    [[oracle.currency_pairs]]
+    base = "USDC"
+    quote = "USDT"
+
+    [oracle.metrics]
+    prometheus_server_address = ""
+
+    [oracle.metrics.oracle_metrics]
+    enabled = false
+
+    [oracle.metrics.app_metrics]
+    enabled = false
+    validator_cons_address = ""
+
+  {{- end }}
