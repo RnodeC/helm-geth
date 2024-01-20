@@ -21,6 +21,14 @@ spec:
       nodeSelector:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      initContainers:
+      - name: init-berad
+        image: {{ include "berachain.image" . }}
+        command: ["/bin/sh", "-c"]
+        args:
+        - |
+          berad init {{ .moniker }} --home=/home/bera/.berad
+          curl -sLo /home/bera/.berad/config/genesis.json {{ .genesisUrl }}
       containers:
       - name: berad
         image: {{ include "berachain.image" . }}
@@ -76,12 +84,27 @@ spec:
         volumeMounts:
         - name: chaindata
           mountPath: /home/bera/.berad/data
-        - name: app-config
+        - name: apptoml
           mountPath: /home/bera/.berad/config/app.toml
           subPath: app.toml
-        - name: config-config
+        - name: configtoml
           mountPath: /home/bera/.berad/config/config.toml
           subPath: config.toml
+        {{- if .Values.berachain.priv_validator_key_json }}
+        - name: valkey
+          mountPath: /home/bera/.berad/config/priv_validator_key.json
+          readOnly: true
+        {{- end }}
+        {{- if .Values.berachain.priv_validator_state_json }}
+        - name: valstate
+          mountPath: /home/bera/.berad/data/priv_validator_state.json
+          readOnly: true
+        {{- end }}
+        {{- if .Values.berachain.node_key_json }}
+        - name: nodekey
+          mountPath: /home/bera/.berad/config/node_key.json
+          readOnly: true
+        {{- end }}
       enableServiceLinks: false
       terminationGracePeriodSeconds: 300
       securityContext:
@@ -92,12 +115,27 @@ spec:
         fsGroup: 1000
         readOnlyRootFilesystem: 'true'
       volumes:
-      - name: app-config
+      - name: apptoml
         configMap:
-          name: berad-app-config
-      - name: config-config
+          name: apptoml
+      - name: configtoml
         configMap:
-          name: berad-config-config
+          name: configtoml
+      {{- if .Values.berachain.priv_validator_key_json }}
+      - name: valkey
+        secret:
+          secretName: valkey
+      {{- end }}
+      {{- if .Values.berachain.priv_validator_state_json }}
+      - name: valstate
+        secret:
+          secretName: valstate
+      {{- end }}
+      {{- if .Values.berachain.node_key_json }}
+      - name: nodekey
+        secret:
+          secretName: nodekey
+      {{- end }}
   volumeClaimTemplates:
   - apiVersion: v1
     metadata:

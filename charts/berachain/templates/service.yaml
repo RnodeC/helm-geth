@@ -18,12 +18,10 @@ spec:
       protocol: UDP
       name: udppeer
     {{- end }}
-    {{- if .Values.berachain.rpc.enabled }}
     - port: 26657
       targetPort: rpc
       protocol: TCP
       name: rpc
-    {{- end }}
     {{- if .Values.berachain.api.enabled }}
     - port: 1317
       targetPort: api

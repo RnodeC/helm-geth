@@ -1,6 +1,6 @@
 image:
-  repository: berachain
-  tag: notreal
+  repository: docker.io/library/berad
+  tag: 0.17-alpha
 
 storage:
   storageClassName: local
@@ -14,7 +14,7 @@ replicas: 1
 
 resources:
   limits:
-    cpu: 8
+    cpu: 16
     memory: 64Gi
   requests:
     cpu: 4
@@ -22,17 +22,21 @@ resources:
 
 berachain:
   role: full
+ # priv_validator_key_json: ''
+ # priv_validator_state_json: ''
+ # node_key_json: ''
   chainId: ''
   genesisUrl: ''
-  binUrl: ''
   keyringBackend: file
   pruningMode: default
   seeds: ''
-  minGasPrices: '0b/0x5806E416dA447b267cEA759358cF22Cc41FAE80F'
+  minGasPrices: '10000000abgt'
   dbBackend: goleveldb
   persistentPeers: ''
   privatePeerIds: ''
   pexEnabled: true
+  stateSyncEnabled: false
+  stateSyncRpcServers: ''
   telemetry:
     enabled: false
     dogstatsdAddr: ''
@@ -44,14 +48,12 @@ berachain:
     udpPort: 26656
     externalAddress: ''
     seedModeEnabled: false
-    stateSyncEnabled: false
-    stateSyncRpcServers: ''
+    maxInboundPeers: 40
+    maxOutboundPeers: 20
   grpc:
     enabled: true
   rpc:
     corsAllowedOrigins: '[]'
-    maxInboundPeers: 40
-    maxOutboundPeers: 20
   api:
     enabled: false
     unsafeCorsEnabled: false
