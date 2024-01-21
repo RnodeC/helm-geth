@@ -24,11 +24,12 @@ spec:
       initContainers:
       - name: init-berad
         image: {{ include "berachain.image" . }}
+        imagePullPolicy: IfNotPresent
         command: ["/bin/sh", "-c"]
         args:
         - |
-          berad init {{ .moniker }} --home=/home/bera/.berad
-          curl -sLo /home/bera/.berad/config/genesis.json {{ .genesisUrl }}
+          berad init {{ .Values.berachain.moniker }} --home=/home/bera/.berad
+          wget -O /home/bera/.berad/config/genesis.json {{ .genesisUrl }}
       containers:
       - name: berad
         image: {{ include "berachain.image" . }}

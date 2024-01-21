@@ -1,6 +1,6 @@
 image:
-  repository: docker.io/library/berad
-  tag: 0.17-alpha
+  repository: berad
+  tag: notreal
 
 storage:
   storageClassName: local
