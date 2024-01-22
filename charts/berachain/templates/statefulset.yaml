@@ -29,7 +29,10 @@ spec:
         args:
         - |
           berad init {{ .Values.berachain.moniker }} --home=/home/bera/.berad
-          wget -O /home/bera/.berad/config/genesis.json {{ .genesisUrl }}
+          curl -sLo /home/bera/.berad/config/genesis.json {{ .Values.berachain.genesisUrl }}
+        volumeMounts:
+        - name: berad-config-dir
+          mountPath: /home/bera/.berad/config
       containers:
       - name: berad
         image: {{ include "berachain.image" . }}
@@ -41,24 +44,27 @@ spec:
         - --home=/home/bera/.berad
         imagePullPolicy: IfNotPresent
         ports:
-          - name: p2p
-            containerPort: {{ .p2p.tcpPort }}
-            protocol: TCP
-          {{- if .rpc.enabled }}
-          - name: rpc
-            containerPort: 26657
-            protocol: TCP
-          {{- end }}
-          {{- if .api.enabled }}
-          - name: api
-            containerPort: 1317
-            protocol: TCP
-          {{- end }}
-          {{- if .grpc.enabled }}
-          - name: grpc
-            containerPort: 9090
-            protocol: TCP
-          {{- end }}
+        - name: tcppeer
+          containerPort: {{ .p2p.port }}
+          protocol: TCP
+        - name: udppeer
+          containerPort: {{ .p2p.port }}
+          protocol: UDP
+        {{- if .rpc.enabled }}
+        - name: rpc
+          containerPort: 26657
+          protocol: TCP
+        {{- end }}
+        {{- if .api.enabled }}
+        - name: api
+          containerPort: 1317
+          protocol: TCP
+        {{- end }}
+        {{- if .grpc.enabled }}
+        - name: grpc
+          containerPort: 9090
+          protocol: TCP
+        {{- end }}
         {{- end }}
         livenessProbe:
           initialDelaySeconds: 60
@@ -85,6 +91,12 @@ spec:
         volumeMounts:
         - name: chaindata
           mountPath: /home/bera/.berad/data
+        - name: polaris-geth-dir
+          mountPath: /home/bera/.berad/polaris-geth
+        - name: berad-keystore-dir
+          mountPath: /home/bera/.berad/keystore
+        - name: berad-config-dir
+          mountPath: /home/bera/.berad/config
         - name: apptoml
           mountPath: /home/bera/.berad/config/app.toml
           subPath: app.toml
@@ -107,7 +119,7 @@ spec:
           readOnly: true
         {{- end }}
       enableServiceLinks: false
-      terminationGracePeriodSeconds: 300
+      terminationGracePeriodSeconds: 10
       securityContext:
         seccompProfile:
           type: RuntimeDefault
@@ -116,6 +128,12 @@ spec:
         fsGroup: 1000
         readOnlyRootFilesystem: 'true'
       volumes:
+      - name: polaris-geth-dir
+        emptyDir: {}
+      - name: berad-keystore-dir
+        emptyDir: {}
+      - name: berad-config-dir
+        emptyDir: {}
       - name: apptoml
         configMap:
           name: apptoml

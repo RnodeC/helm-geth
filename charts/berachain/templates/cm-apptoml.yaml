@@ -5,10 +5,11 @@ metadata:
   labels:
 {{ include "berachain.labels" . | indent 4 }}
 data:
-  {{- with .Values.berachain }}
-  app.toml: |
+  app.toml: |-
+    {{- with .Values.berachain }}
     # This is a TOML config file.
     # For more information, see https://github.com/toml-lang/toml
+    # Change detected at: {{ now | date "2006-01-02T15:04:05Z07:00" }}
 
     ###############################################################################
     ###                           Base Configuration                            ###
@@ -16,7 +17,7 @@ data:
 
     minimum-gas-prices = "{{ .minGasPrices }}"
     query-gas-limit = "0"
-    pruning = {{ .pruningMode }}"
+    pruning = "{{ .pruningMode }}"
     pruning-keep-recent = "0"
     pruning-interval = "0"
     halt-height = 0
@@ -139,7 +140,7 @@ data:
     is-dev-mode = false
 
     [polaris.polar.miner]
-    etherbase = "{{ .polaris.etherBase }}"
+    etherbase = "{{ .polaris.etherbase }}"
     extra-data = "0x"
     gas-price = "1"
     gas-floor = "0"
@@ -167,7 +168,7 @@ data:
     account-queue = "64"
     global-slots = "5120"
     global-queue = "1024"
-    lifetime = 5m0s
+    lifetime = "5m0s"
 
     [polaris.node]
     name = "polaris-geth"

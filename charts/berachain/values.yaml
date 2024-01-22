@@ -21,10 +21,14 @@ resources:
     memory: 64Gi
 
 berachain:
-  role: full
+ #
+ # To import an existing validator, you can set these vars - base64 encoding of these json files
+ #
  # priv_validator_key_json: ''
  # priv_validator_state_json: ''
  # node_key_json: ''
+
+  role: full
   chainId: ''
   genesisUrl: ''
   keyringBackend: file
@@ -35,6 +39,7 @@ berachain:
   persistentPeers: ''
   privatePeerIds: ''
   pexEnabled: true
+  seedModeEnabled: false
   stateSyncEnabled: false
   stateSyncRpcServers: ''
   telemetry:
@@ -44,8 +49,7 @@ berachain:
     enabled: true
   p2p:
     hostPorts: false
-    tcpPort: 26656
-    udpPort: 26656
+    port: 26656
     externalAddress: ''
     seedModeEnabled: false
     maxInboundPeers: 40
@@ -61,4 +65,4 @@ berachain:
   polaris:
     chainId: '1'
     optimisticExecution: false
-    etherbase: '0xAf15f95bed0D3913a29092Fd7837451Ce4de64D3'
+    etherbase: ''

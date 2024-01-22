@@ -9,11 +9,11 @@ spec:
   type: ClusterIP
   ports:
     {{- if not .Values.berachain.p2p.hostPorts }}
-    - port: {{ .Values.berachain.p2p.tcpPort }}
+    - port: {{ .Values.berachain.p2p.port }}
       targetPort: tcppeer
       protocol: TCP
       name: tcppeer
-    - port: {{ .Values.berachain.p2p.udpPort }}
+    - port: {{ .Values.berachain.p2p.port }}
       targetPort: udppeer
       protocol: UDP
       name: udppeer
