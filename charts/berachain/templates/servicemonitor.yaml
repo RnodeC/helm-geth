@@ -10,8 +10,8 @@ metadata:
   name: berachain-servicemonitor
 spec:
   endpoints:
-  - port: metrics
-    path: /debug/metrics/prometheus
+  - port: prometheus
+    path: /metrics
   jobLabel: app.kubernetes.io/name
   selector:
     matchLabels:
