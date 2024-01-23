@@ -70,16 +70,16 @@ spec:
           initialDelaySeconds: 60
           periodSeconds: 120
           tcpSocket:
-            port: p2p
+            port: tcppeer
         readinessProbe:
           initialDelaySeconds: 10
           periodSeconds: 10
           tcpSocket:
-            port: p2p
+            port: tcppeer
         startupProbe:
           initialDelaySeconds: 120
           tcpSocket:
-            port: p2p
+            port: tcppeer
         resources:
           {{- toYaml .Values.resources | nindent 10 }}
         securityContext:
