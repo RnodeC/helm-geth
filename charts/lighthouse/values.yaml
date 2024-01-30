@@ -1,28 +1,20 @@
 ---
 image:
   repository: sigp/lighthouse
-  tag: v4.5.0
-
+  tag: v4.6.0
 storage:
   storageClassName: local
   pvcSize: 1200Gi
-
 # nodeSelector is optional. Uncomment to use.
 # nodeSelector:
 #   key: value
-
 lighthouse:
-
   network: mainnet
-
   metrics:
     enabled: false
-
   monitoringEndpoint:
-
   beacon:
     enabled: true
-
     resources:
       limits:
         cpu: 6
@@ -30,25 +22,19 @@ lighthouse:
       requests:
         cpu: 3
         memory: 16Gi
-
     metricsPort: 5054
-
     http:
       enabled: true
       port: 5052
-
     p2p:
       hostPorts: false
       tcpPort: 9000
       udpPort: 9000
-
     # use a checkpoint sync provider to speed up syncs from scratch
     checkpointSync:
       enabled: false
       url: https://mainnet.checkpoint.sigp.io
-
     purgeDb: false
-
     # this defines the connection to the execution layer - required by a consensus client like lighthouse
     # all of these values are required if in beacon mode
     # however, if they are not provided, lighthouse pod should still deploy and run for long enough to satisfy liveness and readiness probes, so you can still check things out
@@ -57,21 +43,17 @@ lighthouse:
       host:
       port:
       jwt:
-
     # you most likely want to set this
     # this is how eth peers will target you. this address and port must be accessible from the outside to your beacon node
     enr:
       host:  # your external ip
       port:  # your external port
-
     disableUpnp: true
     validatorMonitorAuto: true
     prunePayloads: true
     genesisBackfill: false
-
   validator:
     enabled: false
-
     resources:
       limits:
         cpu: 6
@@ -79,16 +61,12 @@ lighthouse:
       requests:
         cpu: 3
         memory: 16Gi
-
     metricsPort: 5064
-
     http:
       enabled: true
       port: 5062
-
     # if you are running the beacon node as part of this helm release, the beacon node container will be available in the same pod
     # otherwise, change this url
     beaconNodeUrl: http://localhost:5052
-
     suggestedFeeRecipient:
     graffiti:
