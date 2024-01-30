@@ -50,11 +50,9 @@ spec:
         - name: udppeer
           containerPort: {{ .p2p.port }}
           protocol: UDP
-        {{- if .rpc.enabled }}
         - name: rpc
           containerPort: 26657
           protocol: TCP
-        {{- end }}
         {{- if .api.enabled }}
         - name: api
           containerPort: 1317
