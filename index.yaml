@@ -1,5 +1,19 @@
 apiVersion: v1
 entries:
+  berachain:
+  - apiVersion: v2
+    appVersion: v0.0.1
+    created: "2024-01-31T20:05:42.620537576Z"
+    description: A Helm chart for running a berachain node
+    digest: d6c482955a24e0086230a47fb162e99915412fd99a95423fd0571b474bfe011e
+    maintainers:
+    - email: rnodec@pm.me
+      name: rnodec
+    name: berachain
+    type: application
+    urls:
+    - https://github.com/RnodeC/helm-charts/releases/download/berachain-0.0.1/berachain-0.0.1.tgz
+    version: 0.0.1
   geth:
   - apiVersion: v2
     appVersion: v1.13.11
@@ -418,4 +432,4 @@ entries:
     urls:
     - https://github.com/RnodeC/helm-charts/releases/download/lighthouse-0.1.0/lighthouse-0.1.0.tgz
     version: 0.1.0
-generated: "2024-01-30T14:37:05.285849626Z"
+generated: "2024-01-31T20:05:42.620625591Z"
