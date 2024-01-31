@@ -1,0 +1,68 @@
+image:
+  repository: berad
+  tag: notreal
+
+storage:
+  storageClassName: local
+  pvcSize: 1200Gi
+
+# nodeSelector is optional. Uncomment to use.
+# nodeSelector:
+#   key: value
+
+replicas: 1
+
+resources:
+  limits:
+    cpu: 16
+    memory: 64Gi
+  requests:
+    cpu: 4
+    memory: 64Gi
+
+berachain:
+ #
+ # To import an existing validator, you can set these vars - base64 encoding of these json files
+ #
+ # priv_validator_key_json: ''
+ # priv_validator_state_json: ''
+ # node_key_json: ''
+
+  role: full
+  chainId: ''
+  genesisUrl: ''
+  keyringBackend: file
+  pruningMode: default
+  seeds: ''
+  minGasPrices: '10000000abgt'
+  dbBackend: goleveldb
+  persistentPeers: ''
+  privatePeerIds: ''
+  pexEnabled: true
+  seedModeEnabled: false
+  stateSyncEnabled: false
+  stateSyncRpcServers: ''
+  telemetry:
+    enabled: false
+    dogstatsdAddr: ''
+  prometheus:
+    enabled: true
+  p2p:
+    hostPorts: false
+    port: 26656
+    externalAddress: ''
+    seedModeEnabled: false
+    maxInboundPeers: 40
+    maxOutboundPeers: 20
+  grpc:
+    enabled: true
+  rpc:
+    corsAllowedOrigins: '[]'
+  api:
+    enabled: false
+    unsafeCorsEnabled: false
+
+  polaris:
+    chainId: '1'
+    optimisticExecution: false
+    etherbase: ''

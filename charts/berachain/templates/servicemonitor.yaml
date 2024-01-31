@@ -1,0 +1,22 @@
+{{- if .Values.berachain.prometheus.enabled -}}
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  labels:
+    prometheus: enabled
+    release: monitoring
+{{ include "berachain.labels" . | indent 4 }}
+  name: berachain-servicemonitor
+spec:
+  endpoints:
+  - port: prometheus
+    path: /metrics
+  jobLabel: app.kubernetes.io/name
+  selector:
+    matchLabels:
+{{ include "berachain.labels" . | indent 6 }}
+  namespaceSelector:
+    matchNames:
+      - {{ .Release.Namespace }}
+{{- end -}}

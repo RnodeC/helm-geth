@@ -1,0 +1,44 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: berachain
+  labels:
+{{ include "berachain.labels" . | indent 4 }}
+spec:
+  type: ClusterIP
+  ports:
+    {{- if not .Values.berachain.p2p.hostPorts }}
+    - port: {{ .Values.berachain.p2p.port }}
+      targetPort: tcppeer
+      protocol: TCP
+      name: tcppeer
+    - port: {{ .Values.berachain.p2p.port }}
+      targetPort: udppeer
+      protocol: UDP
+      name: udppeer
+    {{- end }}
+    - port: 26657
+      targetPort: rpc
+      protocol: TCP
+      name: rpc
+    {{- if .Values.berachain.api.enabled }}
+    - port: 1317
+      targetPort: api
+      protocol: TCP
+      name: api
+    {{- end }}
+    {{- if .Values.berachain.grpc.enabled }}
+    - port: 9090
+      targetPort: grpc
+      protocol: TCP
+      name: grpc
+    {{- end }}
+    {{- if .Values.berachain.prometheus.enabled }}
+    - port: 26660
+      targetPort: prometheus
+      protocol: TCP
+      name: prometheus
+    {{- end }}
+  selector:
+{{ include "berachain.labels" . | indent 4 }}

@@ -1,0 +1,167 @@
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: berad
+  labels:
+{{ include "berachain.labels" . | indent 4 }}
+spec:
+  replicas: {{ .Values.replicas }}
+  serviceName: berad
+  selector:
+    matchLabels:
+{{ include "berachain.labels" . | indent 6 }}
+  template:
+    metadata:
+      labels:
+{{ include "berachain.labels" . | indent 8 }}
+    spec:
+      serviceAccountName: {{ include "berachain.serviceAccountName" . }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      initContainers:
+      - name: init-berad
+        image: {{ include "berachain.image" . }}
+        imagePullPolicy: IfNotPresent
+        command: ["/bin/sh", "-c"]
+        args:
+        - |
+          berad init {{ .Values.berachain.moniker }} --home=/home/bera/.berad
+          curl -sLo /home/bera/.berad/config/genesis.json {{ .Values.berachain.genesisUrl }}
+        volumeMounts:
+        - name: berad-config-dir
+          mountPath: /home/bera/.berad/config
+      containers:
+      - name: berad
+        image: {{ include "berachain.image" . }}
+        {{- with .Values.berachain }}
+        command:
+        - berad
+        args:
+        - start
+        - --home=/home/bera/.berad
+        imagePullPolicy: IfNotPresent
+        ports:
+        - name: tcppeer
+          containerPort: {{ .p2p.port }}
+          protocol: TCP
+        - name: udppeer
+          containerPort: {{ .p2p.port }}
+          protocol: UDP
+        - name: rpc
+          containerPort: 26657
+          protocol: TCP
+        {{- if .api.enabled }}
+        - name: api
+          containerPort: 1317
+          protocol: TCP
+        {{- end }}
+        {{- if .grpc.enabled }}
+        - name: grpc
+          containerPort: 9090
+          protocol: TCP
+        {{- end }}
+        {{- end }}
+        livenessProbe:
+          initialDelaySeconds: 60
+          periodSeconds: 120
+          tcpSocket:
+            port: tcppeer
+        readinessProbe:
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          tcpSocket:
+            port: tcppeer
+        startupProbe:
+          initialDelaySeconds: 120
+          tcpSocket:
+            port: tcppeer
+        resources:
+          {{- toYaml .Values.resources | nindent 10 }}
+        securityContext:
+          privileged: false
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+        volumeMounts:
+        - name: chaindata
+          mountPath: /home/bera/.berad/data
+        - name: polaris-geth-dir
+          mountPath: /home/bera/.berad/polaris-geth
+        - name: berad-keystore-dir
+          mountPath: /home/bera/.berad/keystore
+        - name: berad-config-dir
+          mountPath: /home/bera/.berad/config
+        - name: apptoml
+          mountPath: /home/bera/.berad/config/app.toml
+          subPath: app.toml
+        - name: configtoml
+          mountPath: /home/bera/.berad/config/config.toml
+          subPath: config.toml
+        {{- if .Values.berachain.priv_validator_key_json }}
+        - name: valkey
+          mountPath: /home/bera/.berad/config/priv_validator_key.json
+          readOnly: true
+        {{- end }}
+        {{- if .Values.berachain.priv_validator_state_json }}
+        - name: valstate
+          mountPath: /home/bera/.berad/data/priv_validator_state.json
+          readOnly: true
+        {{- end }}
+        {{- if .Values.berachain.node_key_json }}
+        - name: nodekey
+          mountPath: /home/bera/.berad/config/node_key.json
+          readOnly: true
+        {{- end }}
+      enableServiceLinks: false
+      terminationGracePeriodSeconds: 10
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 1000
+        readOnlyRootFilesystem: 'true'
+      volumes:
+      - name: polaris-geth-dir
+        emptyDir: {}
+      - name: berad-keystore-dir
+        emptyDir: {}
+      - name: berad-config-dir
+        emptyDir: {}
+      - name: apptoml
+        configMap:
+          name: apptoml
+      - name: configtoml
+        configMap:
+          name: configtoml
+      {{- if .Values.berachain.priv_validator_key_json }}
+      - name: valkey
+        secret:
+          secretName: valkey
+      {{- end }}
+      {{- if .Values.berachain.priv_validator_state_json }}
+      - name: valstate
+        secret:
+          secretName: valstate
+      {{- end }}
+      {{- if .Values.berachain.node_key_json }}
+      - name: nodekey
+        secret:
+          secretName: nodekey
+      {{- end }}
+  volumeClaimTemplates:
+  - apiVersion: v1
+    metadata:
+      name: chaindata
+      labels:
+{{ include "berachain.labels" . | indent 8 }}
+    spec:
+      storageClassName: {{ .Values.storage.storageClassName }}
+      accessModes: ["ReadWriteOnce"]
+      resources:
+        requests:
+          storage: {{ .Values.storage.pvcSize }}

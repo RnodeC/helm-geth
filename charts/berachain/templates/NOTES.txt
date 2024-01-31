@@ -1,0 +1,12 @@
+Thank you for installing {{ .Chart.Name }}.
+
+Your release is named {{ .Release.Name }}.
+
+To learn more about the release, try:
+
+  $ helm status {{ .Release.Name }} -n {{ .Release.Namespace }}
+  $ helm get all {{ .Release.Name }} -n {{ .Release.Namespace }}
+
+The jwt that berachain is using to authenticate beacon node connections can be found in the secret named geth-jwt.  You will need to extract this jwt value and provide it to any beacon node that will use this Execution Engine.  Here is an example command to do so:
+
+  $ kubectl get secrets -n berachain geth-jwt -ojsonpath='{.data.jwt}' | base64 -d
