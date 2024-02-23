@@ -3,7 +3,7 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: lighthouse-bn-http
+  name: lighthouse-vc-http
   labels:
 {{ include "lighthouse.labels" . | indent 4 }}
   {{- with .Values.lighthouse.beacon.ingress.http.annotations }}

@@ -17,9 +17,9 @@ lighthouse:
         enabled: true
         annotations: {}
         hosts:
-          - host: http-geth.example.com
+          - host: http-lighthouse.example.com
             paths:
-              - path: /
+              - path: /bn
                 pathType: ImplementationSpecific
         tls: []
   validator:
@@ -35,8 +35,8 @@ lighthouse:
         enabled: true
         annotations: {}
         hosts:
-          - host: http-geth.example.com
+          - host: http-lighthouse.example.com
             paths:
-              - path: /
+              - path: /vc
                 pathType: ImplementationSpecific
         tls: []
