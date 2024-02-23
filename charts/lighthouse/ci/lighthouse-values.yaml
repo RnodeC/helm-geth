@@ -12,7 +12,16 @@ lighthouse:
       requests:
         cpu: 1
         memory: 2Gi
-
+    ingress:
+      http:
+        enabled: true
+        annotations: {}
+        hosts:
+          - host: http-geth.example.com
+            paths:
+              - path: /
+                pathType: ImplementationSpecific
+        tls: []
   validator:
     resources:
       limits:
@@ -21,3 +30,13 @@ lighthouse:
       requests:
         cpu: 1
         memory: 2Gi
+    ingress:
+      http:
+        enabled: true
+        annotations: {}
+        hosts:
+          - host: http-geth.example.com
+            paths:
+              - path: /
+                pathType: ImplementationSpecific
+        tls: []
