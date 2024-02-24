@@ -2,8 +2,8 @@ apiVersion: v2
 name: geth
 description: A Helm chart for running geth (ethereum execution engine)
 type: application
-version: "0.6.10"
-appVersion: "v1.13.12"
+version: "0.6.11"
+appVersion: "v1.13.13"
 maintainers:
   - email: rnodec@pm.me
     name: rnodec
