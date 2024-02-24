@@ -42,8 +42,8 @@ lighthouse:
       udpPort: 9000
     # use a checkpoint sync provider to speed up syncs from scratch
     checkpointSync:
-      enabled: false
-      url: https://mainnet.checkpoint.sigp.io
+      enabled: true
+      url: https://beaconstate.ethstaker.cc
     purgeDb: false
     # this defines the connection to the execution layer - required by a consensus client like lighthouse
     # all of these values are required if in beacon mode
