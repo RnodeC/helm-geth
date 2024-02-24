@@ -12,6 +12,16 @@ lighthouse:
       requests:
         cpu: 1
         memory: 2Gi
+    ingress:
+      http:
+        enabled: true
+        annotations: {}
+        hosts:
+          - host: http-lighthouse.example.com
+            paths:
+              - path: /bn
+                pathType: ImplementationSpecific
+        tls: []
     checkpointSync:
       enabled: false
 
@@ -23,3 +33,13 @@ lighthouse:
       requests:
         cpu: 1
         memory: 2Gi
+    ingress:
+      http:
+        enabled: true
+        annotations: {}
+        hosts:
+          - host: http-lighthouse.example.com
+            paths:
+              - path: /vc
+                pathType: ImplementationSpecific
+        tls: []

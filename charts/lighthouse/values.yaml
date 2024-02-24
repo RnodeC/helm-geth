@@ -22,6 +22,16 @@ lighthouse:
       requests:
         cpu: 3
         memory: 16Gi
+    ingress:
+      http:
+        enabled: false
+        annotations: {}
+        hosts:
+          - host: http-geth.example.com
+            paths:
+              - path: /
+                pathType: ImplementationSpecific
+        tls: []
     metricsPort: 5054
     http:
       enabled: true
@@ -61,6 +71,16 @@ lighthouse:
       requests:
         cpu: 3
         memory: 16Gi
+    ingress:
+      http:
+        enabled: false
+        annotations: {}
+        hosts:
+          - host: http-geth.example.com
+            paths:
+              - path: /
+                pathType: ImplementationSpecific
+        tls: []
     metricsPort: 5064
     http:
       enabled: true
