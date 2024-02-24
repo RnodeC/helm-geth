@@ -12,6 +12,8 @@ lighthouse:
       requests:
         cpu: 1
         memory: 2Gi
+    checkpointSync:
+      enabled: false
 
   validator:
     resources:

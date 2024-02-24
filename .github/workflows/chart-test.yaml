@@ -10,7 +10,7 @@ on:
       - README.md
 
 env:
-  KIND_VERSION: v0.20.0
+  KIND_VERSION: v0.22.0
 
 jobs:
 
@@ -20,8 +20,9 @@ jobs:
       fail-fast: false
       matrix:
         K8S_VERSION:
-        - v1.26.6@sha256:6e2d8b28a5b601defe327b98bd1c2d1930b49e5d8c512e1895099e4504007adb
-        - v1.27.3@sha256:3966ac761ae0136263ffdb6cfd4db23ef8a83cba8a463690e98317add2c9ba72
+        - v1.26.14@sha256:5d548739ddef37b9318c70cb977f57bf3e5015e4552be4e27e57280a8cbb8e4f
+        - v1.27.10@sha256:e6b2f72f22a4de7b957cd5541e519a8bef3bae7261dd30c6df34cd9bdd3f8476
+        - v1.28.7@sha256:9bc6c451a289cf96ad0bbaf33d416901de6fd632415b076ab05f5fa7e4f65c58
     steps:
       - name: Checkout
         uses: actions/checkout@v4

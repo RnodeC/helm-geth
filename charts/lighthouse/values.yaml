@@ -1,7 +1,7 @@
 ---
 image:
   repository: sigp/lighthouse
-  tag: v4.6.0
+  tag: v5.0.0
 storage:
   storageClassName: local
   pvcSize: 1200Gi
@@ -32,7 +32,7 @@ lighthouse:
       udpPort: 9000
     # use a checkpoint sync provider to speed up syncs from scratch
     checkpointSync:
-      enabled: false
+      enabled: true
       url: https://mainnet.checkpoint.sigp.io
     purgeDb: false
     # this defines the connection to the execution layer - required by a consensus client like lighthouse
