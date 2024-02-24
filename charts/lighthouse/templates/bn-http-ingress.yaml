@@ -27,7 +27,7 @@ spec:
               service:
                 name: lighthouse
                 port:
-                  name: http
+                  name: http-bn
           {{- end }}
     {{- end }}
 {{- end }}
