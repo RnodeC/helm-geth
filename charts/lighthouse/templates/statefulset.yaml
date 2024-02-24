@@ -66,6 +66,8 @@ spec:
         {{- end }}
         {{- if .checkpointSync.enabled }}
         - --checkpoint-sync-url={{- required "lighthouse.beacon.checkpointSync.url is required when checkpointSync is enabled" .checkpointSync.url -}}
+        {{- else }}
+        - --allow-insecure-genesis-sync
         {{- end }}
         {{- if .purgeDb }}
         - --purge-db
