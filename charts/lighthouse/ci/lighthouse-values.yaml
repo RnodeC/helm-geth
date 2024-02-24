@@ -22,6 +22,9 @@ lighthouse:
               - path: /bn
                 pathType: ImplementationSpecific
         tls: []
+    checkpointSync:
+      enabled: false
+
   validator:
     resources:
       limits:

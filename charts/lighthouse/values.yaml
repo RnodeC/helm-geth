@@ -43,7 +43,7 @@ lighthouse:
     # use a checkpoint sync provider to speed up syncs from scratch
     checkpointSync:
       enabled: true
-      url: https://beaconstate.ethstaker.cc
+      url: https://mainnet.checkpoint.sigp.io
     purgeDb: false
     # this defines the connection to the execution layer - required by a consensus client like lighthouse
     # all of these values are required if in beacon mode
