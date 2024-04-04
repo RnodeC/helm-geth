@@ -1,7 +1,7 @@
 ---
 image:
   repository: sigp/lighthouse
-  tag: v5.1.2
+  tag: v5.1.3
 storage:
   storageClassName: local
   pvcSize: 1200Gi
@@ -56,8 +56,8 @@ lighthouse:
     # you most likely want to set this
     # this is how eth peers will target you. this address and port must be accessible from the outside to your beacon node
     enr:
-      host:  # your external ip
-      port:  # your external port
+      host: # your external ip
+      port: # your external port
     disableUpnp: true
     validatorMonitorAuto: true
     prunePayloads: true
