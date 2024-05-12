@@ -29,6 +29,19 @@ entries:
     version: 0.0.1
   geth:
   - apiVersion: v2
+    appVersion: v1.14.3
+    created: "2024-05-12T13:41:13.31610979Z"
+    description: A Helm chart for running geth (ethereum execution engine)
+    digest: 3aa3eb3c1e8ff5370667a510f44f676bc970516a53e2d145cb2b2cfc8ef63dd3
+    maintainers:
+    - email: rnodec@pm.me
+      name: rnodec
+    name: geth
+    type: application
+    urls:
+    - https://github.com/RnodeC/helm-charts/releases/download/geth-0.7.2/geth-0.7.2.tgz
+    version: 0.7.2
+  - apiVersion: v2
     appVersion: v1.14.2
     created: "2024-05-08T17:45:05.203046831Z"
     description: A Helm chart for running geth (ethereum execution engine)
@@ -601,4 +614,4 @@ entries:
     urls:
     - https://github.com/RnodeC/helm-charts/releases/download/lighthouse-0.1.0/lighthouse-0.1.0.tgz
     version: 0.1.0
-generated: "2024-05-08T17:45:05.203385123Z"
+generated: "2024-05-12T13:41:13.316356472Z"
