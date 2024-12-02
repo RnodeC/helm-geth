@@ -1,7 +1,7 @@
 ---
 image:
   repository: sigp/lighthouse
-  tag: v5.3.0
+  tag: v6.0.0
 storage:
   storageClassName: local
   pvcSize: 1200Gi
