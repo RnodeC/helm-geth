@@ -50,16 +50,16 @@ lighthouse:
     # however, if they are not provided, lighthouse pod should still deploy and run for long enough to satisfy liveness and readiness probes, so you can still check things out
     # jwt must not include a leading '0x'
     executionEndpoint:
-      host:
-      port:
-      jwt:
+      host: localhost
+      port: 8551
+      jwt: dummy
     # you most likely want to set this
     # this is how eth peers will target you. this address and port must be accessible from the outside to your beacon node
     # host = your external ip
     # port = your external port
     enr:
-      host:
-      port:
+      host: 
+      port: 
     disableUpnp: true
     validatorMonitorAuto: true
     prunePayloads: true
