@@ -58,8 +58,8 @@ lighthouse:
     # host = your external ip
     # port = your external port
     enr:
-      host: 
-      port: 
+      host:
+      port:
     disableUpnp: true
     validatorMonitorAuto: true
     prunePayloads: true
