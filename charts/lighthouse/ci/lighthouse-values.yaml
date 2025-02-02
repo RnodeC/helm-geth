@@ -24,6 +24,10 @@ lighthouse:
         tls: []
     checkpointSync:
       enabled: false
+    executionEndpoint:
+      host: 'localhost'
+      port: 8551
+      jwt: 7zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz
 
   validator:
     resources:
